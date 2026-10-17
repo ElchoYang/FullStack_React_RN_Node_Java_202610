@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>React Native Web Demo</title>
+    <style>
+      html, body, #root {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        background-color: #f1f5f9;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      }
+      /* 在 PC 浏览器端呈现类似手机的容器效果 */
+      #root {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+      .mobile-frame {
+        width: 100%;
+        max-width: 440px;
+        height: 100%;
+        max-height: 880px;
+        background: #ffffff;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+      }
+      @media (max-width: 480px) {
+        .mobile-frame {
+          max-width: 100%;
+          max-height: 100%;
+          box-shadow: none;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/index.web.tsx"></script>
+  </body>
+</html>
