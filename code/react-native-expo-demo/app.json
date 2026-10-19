@@ -2,6 +2,7 @@
   "expo": {
     "name": "react-native-demo",
     "slug": "react-native-demo",
+    "scheme": "reactnativedemo",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -27,6 +28,10 @@
       "eas": {
         "projectId": "4e0c8714-d67c-4038-a02c-b91975f61012"
       }
-    }
+    },
+    "plugins": [
+      "expo-font",
+      "expo-asset"
+    ]
   }
 }

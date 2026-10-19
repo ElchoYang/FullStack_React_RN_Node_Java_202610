@@ -71,12 +71,18 @@ code/react-native-expo-demo/
 │   ├── theme/                  # 主题系统
 │   │   └── index.ts            # React Native Paper MD3 浅色 / 深色定制主题
 │   ├── screens/                # 页面层
-│   │   ├── PostListScreen.tsx  # 文章列表页：Axios GET 请求、下拉刷新、Searchbar 本地过滤、Paper Card 卡片
+│   │   ├── PostListScreen.tsx  # 文章列表页：Axios GET 请求、下拉刷新、打开抽屉、跳详情 (Stack)
 │   │   ├── PostCreateScreen.tsx# 发布文章页：Paper Outlined TextInput、表单校验、Axios POST 提交
+│   │   ├── PostDetailScreen.tsx# 文章详情页 (Stack 栈推入)：接收 postId 参数、Scheme 唤起直达
+│   │   ├── AboutScreen.tsx     # 关于应用页 (Drawer 抽屉菜单项)：深度链接规则汇总、汉堡菜单
 │   │   └── ShowcaseScreen.tsx  # UI 组件大厅：分段选择器、Badge、Dialog 弹窗、按钮组、深色模式切换
-│   └── navigation/             # 路由与导航配置
-│       └── AppNavigator.tsx    # 底部选项卡导航 (Bottom Tab Navigator) 与图标映射
-├── App.tsx                     # 根入口：集成 PaperProvider、NavigationContainer、SafeAreaProvider
+│   └── navigation/             # 路由与导航配置 (Stack + Drawer + Tab 复合架构)
+│       ├── types.ts            # 严格类型路由参数表 (RootStack, MainDrawer, BottomTab)
+│       ├── BottomTabNavigator.tsx # 底部选项卡导航 (Posts, Create, Showcase)
+│       ├── DrawerNavigator.tsx    # 侧边抽屉导航 (MainTabs, About)
+│       ├── RootStackNavigator.tsx # 根堆栈导航 (DrawerRoot, PostDetail)
+│       └── AppNavigator.tsx       # 总导航出口组件
+├── App.tsx                     # 根入口：集成 PaperProvider、NavigationContainer(含 Scheme linking)
 ├── app.json                    # Expo 项目配置文件
 ├── package.json                # 依赖包声明与脚本
 └── tsconfig.json               # TypeScript 严格模式配置
@@ -108,9 +114,34 @@ code/react-native-expo-demo/
 - 一键切换全局浅色（Light）与深色（Dark）主题；
 - Paper 主题与 React Navigation 导航栏主题联动同步。
 
+### 4. 三层复合导航架构 (Stack + Drawer + Tab)
+本项目实现了移动端最为完整成熟的复合嵌套导航系统：
+- **最外层 (RootStackNavigator)**：管理卡片压栈与出栈（Push/Pop）。点击列表文章卡片，右侧滑入详情页 `PostDetailScreen`；
+- **中间层 (DrawerNavigator)**：管理左侧滑出式抽屉侧边栏。提供「首页中心」与「关于应用 `AboutScreen`」两大独立功能区，支持手势侧滑或点击汉堡菜单唤出；
+- **最内层 (BottomTabNavigator)**：管理主要界面的底部底栏平级切换（文章列表、发文章、UI 大厅）。
+
+### 5. 深度链接 (Scheme URL) 唤起与测试
+已在 `app.json` 中配置协议：`"scheme": "reactnativedemo"`，并在 `App.tsx` 中绑定规则。
+
+可在开发阶段通过 Expo 官方工具模拟手机外部点击链接进行测试：
+```bash
+# 1. 唤醒直达文章列表
+npx uri-scheme open "reactnativedemo://posts" --android
+
+# 2. 唤醒直达发文章页
+npx uri-scheme open "reactnativedemo://create" --android
+
+# 3. 唤醒直达文章详情页 (自动传递路由参数 postId=123)
+npx uri-scheme open "reactnativedemo://post/123" --android
+
+# 4. 唤醒直达抽屉中的“关于”页面
+npx uri-scheme open "reactnativedemo://about" --android
+```
+*(如果是 iOS 模拟器，将末尾的 `--android` 换成 `--ios` 即可)*
+
 ---
 
-## 五、快速启动与多端运行指南
+## 六、快速启动与多端运行指南
 
 ### 1. 启动开发服务器 (Expo CLI)
 ```bash
