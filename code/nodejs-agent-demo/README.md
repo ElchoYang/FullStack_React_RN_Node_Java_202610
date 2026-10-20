@@ -95,3 +95,12 @@ curl -N -X POST http://localhost:3001/api/agent/chat/stream \
 
 ### 4. 方式 C：浏览器 GET /api/health
 直接在浏览器访问：`http://localhost:3001/api/health` 即可查看服务健康状态。
+
+### 5. 方式 D：使用 React 智能体工作台前端 (推荐 UI 体验！)
+进入 `code/react-agent-demo` 项目启动现代化 Web 工作台：
+```bash
+cd code/react-agent-demo
+npm install
+npm run dev
+```
+打开 `http://localhost:5174`，即可在图形化界面中体验深度思考链（Thought CoT）折叠展开、外部工具调用（Tool Calling）状态卡片、打字机逐字推流与随时停止生成等功能。
