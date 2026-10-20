@@ -2,6 +2,7 @@ import React from 'react';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { useTheme } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 import { BottomTabParamList } from './types';
 import { PostListScreen } from '../screens/PostListScreen';
 import { PostCreateScreen } from '../screens/PostCreateScreen';
@@ -16,13 +17,14 @@ interface BottomTabNavigatorProps {
 
 /**
  * 【1. 底部 Tab 导航器 (BottomTabNavigator)】
- * 负责平级切换三个主要视图：文章列表、发文章、UI 组件大厅
+ * 负责平级切换三个主要视图：文章列表、发文章、UI 组件大厅 (支持多语言实时切换)
  */
 export const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({
   isDarkMode,
   onToggleTheme,
 }) => {
   const theme = useTheme();
+  const { t } = useTranslation();
 
   return (
     <Tab.Navigator
@@ -43,7 +45,7 @@ export const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({
         name="Posts"
         component={PostListScreen}
         options={{
-          tabBarLabel: '文章列表',
+          tabBarLabel: t('nav.posts'),
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="newspaper-variant-outline"
@@ -57,7 +59,7 @@ export const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({
         name="Create"
         component={PostCreateScreen}
         options={{
-          tabBarLabel: '发文章',
+          tabBarLabel: t('nav.create'),
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="plus-circle-outline"
@@ -70,7 +72,7 @@ export const BottomTabNavigator: React.FC<BottomTabNavigatorProps> = ({
       <Tab.Screen
         name="Showcase"
         options={{
-          tabBarLabel: 'UI 大厅',
+          tabBarLabel: t('nav.showcase'),
           tabBarIcon: ({ color, size }) => (
             <MaterialCommunityIcons
               name="palette-outline"

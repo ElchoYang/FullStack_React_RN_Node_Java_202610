@@ -1,0 +1,45 @@
+{
+  "nav": {
+    "posts": "文章列表",
+    "create": "发文章",
+    "showcase": "UI 大厅",
+    "about": "关于应用",
+    "homeCenter": "首页中心"
+  },
+  "common": {
+    "confirm": "确定",
+    "cancel": "取消",
+    "submit": "立即发布",
+    "submitting": "正在提交...",
+    "delete": "删除",
+    "retry": "重试",
+    "loading": "正在加载...",
+    "search": "搜索文章标题或内容...",
+    "empty": "未找到相关文章",
+    "language": "多语言设置",
+    "currentLanguage": "当前语言",
+    "darkMode": "深色模式",
+    "lightMode": "浅色模式"
+  },
+  "createPost": {
+    "title": "新建文章表单",
+    "subtitle": "react-hook-form 驱动 • Zod 强类型校验",
+    "appbarTitle": "发布文章 (Hook Form + i18n)",
+    "titleLabel": "文章标题",
+    "titlePlaceholder": "请输入文章标题 (至少3个字)",
+    "bodyLabel": "文章内容",
+    "bodyPlaceholder": "请输入详细文章正文内容 (至少5个字)",
+    "userIdLabel": "作者 ID (User ID)",
+    "successMessage": "文章发布成功！(ID: {{id}})",
+    "failMessage": "提交失败，请重试",
+    "errors": {
+      "titleRequired": "文章标题不能为空",
+      "titleMin": "标题长度至少 3 个字符",
+      "titleMax": "标题不能超过 50 个字符",
+      "bodyRequired": "文章正文不能为空",
+      "bodyMin": "正文内容至少 5 个字符",
+      "userIdRequired": "作者 ID 不能为空",
+      "userIdNumber": "作者 ID 必须为纯数字"
+    }
+  }
+}

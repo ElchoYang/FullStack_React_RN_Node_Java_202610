@@ -15,20 +15,26 @@ import {
   Text,             // 【Paper】排版文本
   useTheme,         // 【Paper Hook】获取当前主题
 } from 'react-native-paper';
+import { useTranslation } from 'react-i18next';
 
 interface ShowcaseScreenProps {
   isDarkMode: boolean;
   onToggleTheme: () => void;
 }
 
-export const ShowcaseScreen: React.FC<ShowcaseScreenProps> = ({
-  isDarkMode,
-  onToggleTheme,
-}) => {
+export function ShowcaseScreen({ isDarkMode, onToggleTheme }: ShowcaseScreenProps) {
   const theme = useTheme();
+  const { t, i18n } = useTranslation();
   const [dialogVisible, setDialogVisible] = useState(false);
   const [segmentedValue, setSegmentedValue] = useState('daily');
   const [notificationEnabled, setNotificationEnabled] = useState(true);
+
+  // 当前语言
+  const currentLang = i18n.language?.startsWith('en') ? 'en' : 'zh';
+
+  const handleLanguageChange = (lang: string) => {
+    i18n.changeLanguage(lang);
+  };
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -38,25 +44,37 @@ export const ShowcaseScreen: React.FC<ShowcaseScreenProps> = ({
 
       <ScrollView contentContainerStyle={styles.scrollContent}>
         {/**
-         * 【卡片 1：主题与模式切换】
+         * 【卡片 1：主题与语言设置】
          */}
         <Card style={styles.card} mode="elevated">
-          <Card.Title title="🎨 主题与模式" subtitle="Material Design 3 动态色彩" />
+          <Card.Title title="🎨 主题与语言 (Theme & i18n)" subtitle="Material Design 3 动态色彩与中英文切换" />
           <Card.Content>
+            {/* 深浅色模式 */}
             <View style={styles.rowBetween}>
               <View>
-                <Text variant="titleMedium">深色模式 (Dark Theme)</Text>
-                {/* 使用 theme.colors.outline 获取柔和的副文本灰色 */}
+                <Text variant="titleMedium">{t('common.darkMode')}</Text>
                 <Text variant="bodySmall" style={{ color: theme.colors.outline }}>
-                  当前: {isDarkMode ? '开启 (Dark)' : '关闭 (Light)'}
+                  {isDarkMode ? 'Dark' : 'Light'}
                 </Text>
               </View>
-              {/**
-               * 【Switch 开关】
-               * - value: 当前是否开启的布尔值
-               * - onValueChange: 状态改变触发回调
-               */}
               <Switch value={isDarkMode} onValueChange={onToggleTheme} />
+            </View>
+
+            <Divider style={styles.divider} />
+
+            {/* 中英文语言切换 */}
+            <View style={{ marginTop: 8 }}>
+              <Text variant="titleMedium" style={{ marginBottom: 8 }}>
+                🌐 {t('common.language')}
+              </Text>
+              <SegmentedButtons
+                value={currentLang}
+                onValueChange={handleLanguageChange}
+                buttons={[
+                  { value: 'zh', label: '简体中文', icon: 'translate' },
+                  { value: 'en', label: 'English', icon: 'web' },
+                ]}
+              />
             </View>
           </Card.Content>
         </Card>

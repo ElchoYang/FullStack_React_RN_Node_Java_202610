@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState, useMemo } from 'react';
 import {
   KeyboardAvoidingView,
   Platform,
@@ -15,37 +15,98 @@ import {
   TextInput,
   useTheme,
 } from 'react-native-paper';
-import { useCreatePost } from '../hooks/useCreatePost';
+// 【React Hook Form 核心】useForm 驱动表单，Controller 用于桥接 React Native 原生输入框
+import { useForm, Controller } from 'react-hook-form';
+// 【Zod 模式校验器】声明式数据校验规范
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+// 【i18next 国际化 Hook】
+import { useTranslation } from 'react-i18next';
+import { postApi } from '../api/postApi';
 
 /**
- * 【函数式组件：PostCreateScreen】
- * 表单业务逻辑、受控输入与验证完全由自定义 Hook useCreatePost 提供
- * 组件本身保持极度纯粹，仅承载 UI 布局与用户触发事件
+ * 动态根据当前语言生成 Zod Schema 工厂函数
  */
-export const PostCreateScreen: React.FC = () => {
+const createPostSchema = (t: (key: string) => string) =>
+  z.object({
+    title: z
+      .string()
+      .min(1, t('createPost.errors.titleRequired'))
+      .min(3, t('createPost.errors.titleMin'))
+      .max(50, t('createPost.errors.titleMax')),
+    body: z
+      .string()
+      .min(1, t('createPost.errors.bodyRequired'))
+      .min(5, t('createPost.errors.bodyMin')),
+    userId: z
+      .string()
+      .min(1, t('createPost.errors.userIdRequired'))
+      .regex(/^\d+$/, t('createPost.errors.userIdNumber')),
+  });
+
+// 表单数据类型定义
+interface PostFormData {
+  title: string;
+  body: string;
+  userId: string;
+}
+
+/**
+ * 【页面组件：PostCreateScreen】
+ * 融合：react-hook-form + zod + react-i18next 国际化中英文
+ */
+export function PostCreateScreen() {
   const theme = useTheme();
+  // 1. 获取 i18n 翻译函数 t 和当前语言实例
+  const { t } = useTranslation();
 
-  // 1. 调用自定义表单 Hook
-  const { form, loading, validation, updateField, submit } = useCreatePost();
+  // 2. 根据当前语言动态生成 Zod 校验 Schema
+  const postSchema = useMemo(() => createPostSchema(t), [t]);
 
-  // 2. 局部浮层反馈状态
+  // 3. 初始化 react-hook-form
+  const {
+    control,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<PostFormData>({
+    resolver: zodResolver(postSchema),
+    defaultValues: {
+      title: '',
+      body: '',
+      userId: '1',
+    },
+    mode: 'onBlur',
+  });
+
+  // 提示信息状态
   const [snackbar, setSnackbar] = useState<{ visible: boolean; message: string }>({
     visible: false,
     message: '',
   });
 
-  // 3. 提交包装器
-  const handleFormSubmit = async () => {
-    const createdPost = await submit();
-    if (createdPost) {
-      setSnackbar({
-        visible: true,
-        message: `文章创建成功！ID: ${createdPost.id}`,
+  /**
+   * 【表单提交处理函数】
+   */
+  const onSubmit = async (data: PostFormData) => {
+    try {
+      const createdPost = await postApi.createPost({
+        title: data.title.trim(),
+        body: data.body.trim(),
+        userId: parseInt(data.userId, 10),
       });
-    } else {
+
       setSnackbar({
         visible: true,
-        message: '提交失败，请重试',
+        message: t('createPost.successMessage', { id: createdPost.id }),
+      });
+
+      // 成功后重置表单
+      reset();
+    } catch {
+      setSnackbar({
+        visible: true,
+        message: t('createPost.failMessage'),
       });
     }
   };
@@ -53,7 +114,7 @@ export const PostCreateScreen: React.FC = () => {
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Appbar.Header elevated>
-        <Appbar.Content title="发布文章 (函数式 Hook)" />
+        <Appbar.Content title={t('createPost.appbarTitle')} />
       </Appbar.Header>
 
       <KeyboardAvoidingView
@@ -63,62 +124,102 @@ export const PostCreateScreen: React.FC = () => {
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <Card style={styles.formCard} mode="elevated">
             <Card.Title
-              title="新建文章表单"
-              subtitle="基于函数式 Custom Hook (useCreatePost) 管理"
+              title={t('createPost.title')}
+              subtitle={t('createPost.subtitle')}
             />
             <Card.Content>
-              {/* 标题输入 */}
-              <TextInput
-                label="文章标题"
-                value={form.title}
-                onChangeText={updateField('title')}
-                mode="outlined"
-                placeholder="请输入文章标题 (至少3个字)"
-                error={validation.isTitleInvalid}
-                left={<TextInput.Icon icon="format-title" />}
-                style={styles.input}
-              />
-              <HelperText type="error" visible={validation.isTitleInvalid}>
-                标题长度不能少于 3 个字符
-              </HelperText>
-
-              {/* 内容输入 */}
-              <TextInput
-                label="文章内容"
-                value={form.body}
-                onChangeText={updateField('body')}
-                mode="outlined"
-                multiline
-                numberOfLines={4}
-                placeholder="请输入详细文章正文内容 (至少5个字)"
-                error={validation.isBodyInvalid}
-                left={<TextInput.Icon icon="text-box-outline" />}
-                style={styles.input}
-              />
-              <HelperText type="error" visible={validation.isBodyInvalid}>
-                正文内容不能少于 5 个字符
-              </HelperText>
-
-              {/* 用户 ID */}
-              <TextInput
-                label="作者 ID (User ID)"
-                value={form.userId}
-                onChangeText={updateField('userId')}
-                mode="outlined"
-                keyboardType="numeric"
-                left={<TextInput.Icon icon="account-outline" />}
-                style={styles.input}
+              {/**
+               * 【文章标题输入框】
+               */}
+              <Controller
+                control={control}
+                name="title"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <>
+                    <TextInput
+                      label={t('createPost.titleLabel')}
+                      value={value}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      mode="outlined"
+                      placeholder={t('createPost.titlePlaceholder')}
+                      error={!!errors.title}
+                      left={<TextInput.Icon icon="format-title" />}
+                      style={styles.input}
+                    />
+                    <HelperText type="error" visible={!!errors.title}>
+                      {errors.title?.message}
+                    </HelperText>
+                  </>
+                )}
               />
 
+              {/**
+               * 【文章正文输入框】
+               */}
+              <Controller
+                control={control}
+                name="body"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <>
+                    <TextInput
+                      label={t('createPost.bodyLabel')}
+                      value={value}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      mode="outlined"
+                      multiline
+                      numberOfLines={4}
+                      placeholder={t('createPost.bodyPlaceholder')}
+                      error={!!errors.body}
+                      left={<TextInput.Icon icon="text-box-outline" />}
+                      style={styles.input}
+                    />
+                    <HelperText type="error" visible={!!errors.body}>
+                      {errors.body?.message}
+                    </HelperText>
+                  </>
+                )}
+              />
+
+              {/**
+               * 【作者 ID 输入框】
+               */}
+              <Controller
+                control={control}
+                name="userId"
+                render={({ field: { onChange, onBlur, value } }) => (
+                  <>
+                    <TextInput
+                      label={t('createPost.userIdLabel')}
+                      value={value}
+                      onBlur={onBlur}
+                      onChangeText={onChange}
+                      mode="outlined"
+                      keyboardType="numeric"
+                      error={!!errors.userId}
+                      left={<TextInput.Icon icon="account-outline" />}
+                      style={styles.input}
+                    />
+                    <HelperText type="error" visible={!!errors.userId}>
+                      {errors.userId?.message}
+                    </HelperText>
+                  </>
+                )}
+              />
+
+              {/**
+               * 【提交按钮】
+               */}
               <Button
                 mode="contained"
                 icon="send"
-                onPress={handleFormSubmit}
-                loading={loading}
-                disabled={!validation.canSubmit || loading}
+                onPress={handleSubmit(onSubmit)}
+                loading={isSubmitting}
+                disabled={isSubmitting}
                 style={styles.submitButton}
               >
-                {loading ? '正在提交...' : '立即发布'}
+                {isSubmitting ? t('common.submitting') : t('common.submit')}
               </Button>
             </Card.Content>
           </Card>
@@ -130,7 +231,7 @@ export const PostCreateScreen: React.FC = () => {
         onDismiss={() => setSnackbar((prev) => ({ ...prev, visible: false }))}
         duration={3500}
         action={{
-          label: '好的',
+          label: t('common.confirm'),
           onPress: () => setSnackbar((prev) => ({ ...prev, visible: false })),
         }}
       >
@@ -138,7 +239,7 @@ export const PostCreateScreen: React.FC = () => {
       </Snackbar>
     </View>
   );
-};
+}
 
 const styles = StyleSheet.create({
   container: {

@@ -68,11 +68,14 @@ code/react-native-expo-demo/
 │   ├── hooks/                  # 函数式自定义 Hooks (状态与副作用彻底下沉)
 │   │   ├── usePosts.ts         # 文章获取、刷新、不可变删除纯函数 Hook
 │   │   └── useCreatePost.ts    # 表单受控输入、纯校验函数与异步提交 Hook
+│   ├── i18n/                   # 国际化多语言体系 (i18next + expo-localization)
+│   │   ├── index.ts            # 设备语言自动检测与初始化 (zh/en)
+│   │   └── locales/            # 中英文翻译字典 (zh.json, en.json)
 │   ├── theme/                  # 主题系统
 │   │   └── index.ts            # React Native Paper MD3 浅色 / 深色定制主题
 │   ├── screens/                # 页面层
 │   │   ├── PostListScreen.tsx  # 文章列表页：Axios GET 请求、下拉刷新、打开抽屉、跳详情 (Stack)
-│   │   ├── PostCreateScreen.tsx# 发布文章页：Paper Outlined TextInput、表单校验、Axios POST 提交
+│   │   ├── PostCreateScreen.tsx# 发布文章页：react-hook-form + zod 校验、Controller 桥接 Paper 输入框
 │   │   ├── PostDetailScreen.tsx# 文章详情页 (Stack 栈推入)：接收 postId 参数、Scheme 唤起直达
 │   │   ├── AboutScreen.tsx     # 关于应用页 (Drawer 抽屉菜单项)：深度链接规则汇总、汉堡菜单
 │   │   └── ShowcaseScreen.tsx  # UI 组件大厅：分段选择器、Badge、Dialog 弹窗、按钮组、深色模式切换

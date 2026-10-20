@@ -1,0 +1,45 @@
+{
+  "nav": {
+    "posts": "Posts",
+    "create": "Create",
+    "showcase": "Showcase",
+    "about": "About App",
+    "homeCenter": "Home Center"
+  },
+  "common": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "submit": "Publish Now",
+    "submitting": "Submitting...",
+    "delete": "Delete",
+    "retry": "Retry",
+    "loading": "Loading...",
+    "search": "Search post title or content...",
+    "empty": "No posts found",
+    "language": "Language Settings",
+    "currentLanguage": "Current Language",
+    "darkMode": "Dark Mode",
+    "lightMode": "Light Mode"
+  },
+  "createPost": {
+    "title": "Create Post Form",
+    "subtitle": "Powered by react-hook-form • Zod Type Validation",
+    "appbarTitle": "Create Post (Hook Form + i18n)",
+    "titleLabel": "Post Title",
+    "titlePlaceholder": "Enter post title (at least 3 characters)",
+    "bodyLabel": "Post Body",
+    "bodyPlaceholder": "Enter detailed post content (at least 5 characters)",
+    "userIdLabel": "Author ID (User ID)",
+    "successMessage": "Post created successfully! (ID: {{id}})",
+    "failMessage": "Submission failed, please retry",
+    "errors": {
+      "titleRequired": "Post title is required",
+      "titleMin": "Title must be at least 3 characters",
+      "titleMax": "Title cannot exceed 50 characters",
+      "bodyRequired": "Post content is required",
+      "bodyMin": "Content must be at least 5 characters",
+      "userIdRequired": "Author ID is required",
+      "userIdNumber": "Author ID must be a valid number"
+    }
+  }
+}

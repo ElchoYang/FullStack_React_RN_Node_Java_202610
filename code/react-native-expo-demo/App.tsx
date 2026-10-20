@@ -9,6 +9,7 @@ import {
   LinkingOptions,
 } from '@react-navigation/native';
 import * as Linking from 'expo-linking';
+import './src/i18n'; // 初始化 i18n 国际化多语言
 import { lightTheme, darkTheme } from './src/theme';
 import { AppNavigator } from './src/navigation/AppNavigator';
 import { RootStackParamList } from './src/navigation/types';
