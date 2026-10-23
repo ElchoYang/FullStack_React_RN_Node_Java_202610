@@ -33,3 +33,5 @@ Thumbs.db
 ~$*.docx
 ~$*.pptx
 .claude/settings.json
+/.workbuddy
+/output
