@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Podman 入门与 Podman Desktop 使用指南（含 Spring Boot 实践）</title>
+<style>
+  :root {
+    --bg: #f8f9fb; --panel: #ffffff; --border: #e3e6ec;
+    --text: #1f2430; --muted: #5c6470;
+    --primary: #6b4fd8; --primary-soft: #efeaff;
+    --code-bg: #f2f3f7; --code-text: #2d3140;
+    --warn-bg: #fff7e8; --warn-border: #f0b429;
+    --ok: #1a7f4e;
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: "Segoe UI", "Microsoft YaHei", "PingFang SC", sans-serif;
+    line-height: 1.7; font-size: 15px;
+  }
+  .page { max-width: 960px; margin: 0 auto; padding: 40px 32px 80px; }
+  header.hero {
+    background: linear-gradient(135deg, #6b4fd8 0%, #8929d8 100%);
+    color: #fff; border-radius: 16px; padding: 32px 36px; margin-bottom: 32px;
+  }
+  header.hero h1 { margin: 0 0 8px; font-size: 26px; }
+  header.hero p { margin: 0; opacity: .92; font-size: 14px; }
+  h2 {
+    font-size: 20px; margin: 40px 0 14px; padding-left: 12px;
+    border-left: 4px solid var(--primary);
+  }
+  h3 { font-size: 16.5px; margin: 26px 0 10px; color: #3a2f7d; }
+  p { margin: 8px 0; }
+  code {
+    background: var(--code-bg); color: var(--code-text);
+    padding: 1.5px 6px; border-radius: 5px; font-size: 13px;
+    font-family: "Cascadia Code", Consolas, monospace;
+  }
+  pre {
+    background: var(--code-bg); border: 1px solid var(--border);
+    border-radius: 10px; padding: 14px 16px; overflow-x: auto; margin: 12px 0;
+  }
+  pre code { background: none; padding: 0; font-size: 13px; line-height: 1.6; }
+  table { width: 100%; border-collapse: collapse; margin: 12px 0; background: var(--panel); }
+  th, td { border: 1px solid var(--border); padding: 8px 12px; text-align: left; vertical-align: top; font-size: 14px; }
+  th { background: var(--primary-soft); color: #3a2f7d; font-weight: 600; }
+  tr:nth-child(even) td { background: #fafafd; }
+  .tip {
+    background: var(--warn-bg); border-left: 4px solid var(--warn-border);
+    border-radius: 8px; padding: 10px 14px; margin: 12px 0; font-size: 14px;
+  }
+  .tip b { color: #9a6b00; }
+  .card {
+    background: var(--panel); border: 1px solid var(--border);
+    border-radius: 12px; padding: 18px 22px; margin: 14px 0;
+  }
+  ol li, ul li { margin: 4px 0; }
+  footer { margin-top: 48px; color: var(--muted); font-size: 13px; text-align: center; }
+  .toc {
+    background: var(--panel); border: 1px solid var(--border); border-radius: 12px;
+    padding: 16px 24px; margin-bottom: 8px;
+  }
+  .toc a { color: var(--primary); text-decoration: none; }
+  .toc a:hover { text-decoration: underline; }
+  @media print {
+    body { background: #fff; }
+    .page { padding: 0; max-width: none; }
+    header.hero { border-radius: 0; }
+    pre, table, .card { break-inside: avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+<header class="hero">
+  <h1>Podman 入门与 Podman Desktop 使用指南</h1>
+  <p>含 Spring Boot 实践 ｜ 适用版本：Podman 5.x / Podman Desktop 1.30+（Windows）｜ 2026-10-25</p>
+</header>
+
+<nav class="toc">
+  <b>目录</b>：
+  <a href="#s1">1. Podman 基础</a> ·
+  <a href="#s2">2. CLI 常用命令</a> ·
+  <a href="#s3">3. Podman Desktop 操作指南</a> ·
+  <a href="#s4">4. Spring Boot + Podman 实践</a> ·
+  <a href="#s5">5. 常见问题 FAQ</a> ·
+  <a href="#s6">6. 参考链接</a>
+</nav>
+
+<!-- ==================== 1 ==================== -->
+<h2 id="s1">1. Podman 基础</h2>
+
+<h3>1.1 Podman 是什么</h3>
+<p>Podman（Pod Manager）是 Red Hat 主导开发的开源容器引擎，用于运行、构建和管理 OCI 标准容器。它解决的问题和 Docker 一样，但架构不同：</p>
+
+<table>
+  <tr><th>对比项</th><th>Podman</th><th>Docker</th></tr>
+  <tr><td>架构</td><td>无守护进程（daemonless），每条命令直接由进程执行</td><td>依赖常驻 dockerd 守护进程</td></tr>
+  <tr><td>权限模型</td><td>原生支持 rootless（非 root 运行），更安全</td><td>rootless 是后期补充，功能受限</td></tr>
+  <tr><td>CLI 兼容</td><td><code>alias docker=podman</code> 几乎无感迁移</td><td>—</td></tr>
+  <tr><td>Pod 概念</td><td>原生支持 Pod（多容器共享网络/存储命名空间）</td><td>无（K8s 层面才有）</td></tr>
+  <tr><td>Systemd 集成</td><td>可生成 systemd unit 管理容器</td><td>需第三方工具</td></tr>
+  <tr><td>图形界面</td><td>Podman Desktop（开源免费）</td><td>Docker Desktop（商用需付费授权）</td></tr>
+  <tr><td>Windows 实现</td><td>WSL2 中跑 Linux 虚拟机（podman machine）</td><td>WSL2 / Hyper-V</td></tr>
+</table>
+
+<p>关键特性：</p>
+<ul>
+  <li><b>无守护进程</b>：没有单点故障的后台进程，<code>podman ps</code> 直接与容器运行时（crun/runc）交互。</li>
+  <li><b>Rootless 优先</b>：默认以普通用户身份运行容器，容器内 root 映射为宿主机普通用户，逃逸风险低。</li>
+  <li><b>OCI 兼容</b>：镜像格式、CLI 命令与 Docker 完全兼容，可直接从 Docker Hub 拉取镜像。</li>
+  <li><b>内置 Compose 支持</b>：Podman 5.x 自带 <code>podman compose</code>，可调用外部 docker-compose 或 podman-compose。</li>
+</ul>
+
+<h3>1.2 核心概念</h3>
+<table>
+  <tr><th>概念</th><th>说明</th></tr>
+  <tr><td><b>镜像（Image）</b></td><td>只读模板，分层存储，OCI 格式</td></tr>
+  <tr><td><b>容器（Container）</b></td><td>镜像的运行实例，读写层叠加在镜像之上</td></tr>
+  <tr><td><b>Pod</b></td><td>一个或多个容器的组合，共享同一网络命名空间（同一 IP）、可共享卷。Podman 特有，向 Kubernetes 对齐</td></tr>
+  <tr><td><b>卷（Volume）</b></td><td>持久化数据存储，生命周期独立于容器</td></tr>
+  <tr><td><b>网络</b></td><td>Podman 5 使用 Netavark 作为网络栈（替代 CNI），默认创建 <code>podman</code> bridge 网络</td></tr>
+  <tr><td><b>podman machine</b></td><td>Windows/macOS 上管理 Linux 虚拟机的工具，容器实际跑在这个虚拟机里</td></tr>
+</table>
+
+<h3>1.3 Windows 上的架构（重要）</h3>
+<p>在 Windows 上，Podman <b>不是原生运行</b>的：</p>
+<pre><code>Windows 宿主机
+ └─ Podman Desktop（GUI，Electron 应用）
+     └─ podman.exe（CLI 客户端）
+         └─ podman machine（WSL2 虚拟机 "podman-machine-default"）
+             └─ Linux 容器（crun 运行时、Netavark 网络、Podman 引擎）</code></pre>
+
+<div class="tip"><b>理解这一点非常重要</b>，它决定了后面所有"注意事项"：
+<ol>
+  <li>容器跑在 WSL2 虚拟机里，<b>虚拟机不启动，一切命令都会失败</b>（报 <code>dial unix /run/podman/podman.sock: connect: no such file or directory</code>）。</li>
+  <li>卷挂载的路径是虚拟机视角的路径，不是 Windows 路径。</li>
+  <li>虚拟机默认资源有限（通常 4GB 内存），跑 Spring Boot + MySQL 需要调大。</li>
+</ol></div>
+
+<!-- ==================== 2 ==================== -->
+<h2 id="s2">2. Podman CLI 常用命令</h2>
+
+<pre><code># ===== 机器管理（Windows/macOS）=====
+podman machine init --memory 8192 --cpus 4 --disk-size 60   # 初始化虚拟机（调大资源）
+podman machine start                                        # 启动虚拟机
+podman machine stop                                         # 停止虚拟机
+podman machine list                                         # 查看虚拟机状态
+
+# ===== 镜像 =====
+podman pull eclipse-temurin:21-jre                          # 拉取镜像
+podman images                                               # 列出镜像
+podman rmi &lt;镜像ID&gt;                                          # 删除镜像
+podman build -t myapp:1.0 .                                 # 构建镜像
+podman tag myapp:1.0 registry.example.com/myapp:1.0          # 打标签
+podman push registry.example.com/myapp:1.0                   # 推送
+podman save -o myapp.tar myapp:1.0                          # 导出镜像
+podman load -i myapp.tar                                    # 导入镜像
+
+# ===== 容器 =====
+podman run -d --name web -p 8080:8080 myapp:1.0             # 后台运行
+podman run -it --rm alpine sh                               # 交互式运行，退出即删
+podman ps                                                   # 运行中的容器
+podman ps -a                                                # 全部容器（含已停止）
+podman logs -f web                                          # 跟踪日志
+podman exec -it web bash                                    # 进入容器
+podman stop web / podman start web / podman restart web      # 生命周期
+podman rm web                                               # 删除容器
+podman inspect web                                          # 查看详细配置
+podman stats                                                # 实时资源占用
+
+# ===== Pod =====
+podman pod create --name mypod -p 8080:8080                 # 创建 Pod 并映射端口
+podman run -d --pod mypod myapp:1.0                         # 把容器加入 Pod
+podman pod ps                                               # 列出 Pod
+podman pod stop mypod &amp;&amp; podman pod rm mypod                # 停止并删除整个 Pod
+
+# ===== 卷 =====
+podman volume create appdata                                # 创建命名卷
+podman volume ls / podman volume inspect appdata             # 查看
+podman volume rm appdata                                    # 删除
+
+# ===== 清理 =====
+podman system prune                                         # 清理无用容器/网络/悬空镜像
+podman system prune -a --volumes                            # 深度清理（危险，会删全部未用镜像和卷）
+podman system df                                            # 查看磁盘占用
+
+# ===== Docker 兼容 =====
+podman compose up -d                                        # 用 compose 文件编排（Podman 5 内置）</code></pre>
+
+<div class="tip"><b>记忆技巧</b>：把 <code>docker</code> 换成 <code>podman</code>，90% 的命令一模一样。</div>
+
+<!-- ==================== 3 ==================== -->
+<h2 id="s3">3. Podman Desktop 操作指南</h2>
+
+<p>Podman Desktop 是管理 Podman 的图形界面（Electron 应用），左侧边栏就是它的功能地图，对应 v1.30.5 的界面。</p>
+
+<h3>3.1 安装与初始化</h3>
+<pre><code># 1. 安装 Podman Desktop（二选一）
+winget install -e --id RedHat.Podman-Desktop
+# 或从官网 https://podman-desktop.io 下载安装包
+
+# 2. 在 Podman Desktop 内安装 Podman 引擎
+# 首次启动会提示 "Install Podman"，点击即可（等价于 winget install RedHat.Podman）
+# 也可以手动：winget install -e --id RedHat.Podman
+
+# 3. 初始化并启动虚拟机
+podman machine init --memory 8192 --cpus 4 --disk-size 60
+podman machine start</code></pre>
+
+<div class="tip"><b>前置条件</b>：Windows 10/11 需启用 WSL2。管理员 PowerShell 执行 <code>wsl --install</code> 后重启。Podman Desktop 检测到 WSL 缺失时也会引导你开启。</div>
+
+<h3>3.2 界面模块速查（对应左侧边栏）</h3>
+<table>
+  <tr><th>模块</th><th>功能</th><th>常用操作</th></tr>
+  <tr><td><b>Dashboard</b></td><td>总览：引擎状态、CPU/内存占用、快捷入口</td><td>启动/停止 podman machine；查看 Explore Features 教程卡片</td></tr>
+  <tr><td><b>Containers</b></td><td>容器列表</td><td>启动/停止/删除、查看日志（Logs 标签）、打开终端（Terminal 标签）、点击端口直接在浏览器打开服务</td></tr>
+  <tr><td><b>Pods</b></td><td>Pod 列表</td><td>创建 Pod、展开查看 Pod 内每个容器、Kube 化（生成 K8s YAML）</td></tr>
+  <tr><td><b>Images</b></td><td>镜像列表</td><td>拉取镜像（Pull）、从 Containerfile 构建（Build）、运行镜像成容器、推送到仓库</td></tr>
+  <tr><td><b>Volumes</b></td><td>卷管理</td><td>创建/删除卷、查看卷的挂载点（挂载点在 WSL 虚拟机内）</td></tr>
+  <tr><td><b>Networks</b></td><td>网络管理</td><td>查看/创建网络（Netavark），排查容器间通信问题</td></tr>
+  <tr><td><b>Secrets</b></td><td>密钥管理</td><td>存放 API Key、数据库密码等敏感信息，供容器引用</td></tr>
+  <tr><td><b>Kubernetes</b></td><td>K8s 集成</td><td>连接 kind/minikube 等本地集群，用 Podman 直接跑 YAML（<code>podman play kube</code>）</td></tr>
+  <tr><td><b>Extensions</b></td><td>扩展管理</td><td>安装扩展增强功能，如 <b>Podman AI Lab</b>（本地大模型实验）等</td></tr>
+  <tr><td><b>Settings</b></td><td>设置</td><td>引擎配置、资源分配、代理、Registry 认证、Docker 兼容开关</td></tr>
+</table>
+
+<h3>3.3 典型操作流程：跑起一个 Nginx</h3>
+<div class="card">
+  <ol>
+    <li><b>拉镜像</b>：左侧 <code>Images</code> → 右上 <code>Pull</code> → 输入 <code>docker.io/library/nginx:alpine</code> → Pull。</li>
+    <li><b>运行</b>：镜像列表找到 Nginx → 点 <code>▶ Run</code>（或 Advanced 展开更多参数）→ 设置端口映射 <code>8080:80</code>、可选挂载卷。</li>
+    <li><b>验证</b>：<code>Containers</code> 页面看到容器 Running，点击端口 <code>8080</code> 直接在浏览器打开。</li>
+    <li><b>看日志/进终端</b>：点进容器详情 → <code>Logs</code> 看输出、<code>Terminal</code> 执行命令。</li>
+    <li><b>清理</b>：容器停止后点删除；<code>Images</code> 页删除不用的镜像。</li>
+  </ol>
+</div>
+
+<h3>3.4 必须知道的设置</h3>
+<p><b>① Docker 兼容（Settings → Compatibility / Docker Compatibility）</b></p>
+<p>开启后，Podman 会创建一个 Docker 兼容的命名管道套接字（Windows 上是 <code>npipe:////./pipe/docker_engine</code>），让原本只认 Docker 的工具（Maven 插件、IDE、<code>docker compose</code> 等）无感切换到 Podman。<b>Spring Boot 开发强烈建议开启</b>。</p>
+<p><b>② 终端里保持连接</b>：每次重启电脑后，需要先启动虚拟机：</p>
+<pre><code>podman machine start     # 或者在 Dashboard 页面点 Start</code></pre>
+
+<h3>3.5 扩展推荐</h3>
+<table>
+  <tr><th>扩展</th><th>用途</th></tr>
+  <tr><td><b>Podman AI Lab</b></td><td>本地运行开源大模型（Llama、Qwen 等），提供模型目录、Playground 和推理服务，做 AI 应用原型很方便</td></tr>
+  <tr><td><b>Kind 扩展</b></td><td>在 Podman 上快速创建 Kubernetes 集群，验证 K8s 部署</td></tr>
+  <tr><td><b>Docker 兼容扩展</b></td><td>老版本需单独安装，新版已内置</td></tr>
+</table>
+
+<!-- ==================== 4 ==================== -->
+<h2 id="s4">4. Spring Boot + Podman 实践</h2>
+
+<h3>4.1 前置配置（Windows 一次性准备）</h3>
+<pre><code># 1. 调大虚拟机资源（跑 Spring Boot + MySQL 建议 8G）
+podman machine stop
+podman machine set --memory 8192 --cpus 4   # 部分版本需重新 init
+podman machine start
+
+# 2. 开启 Docker 兼容（Podman Desktop: Settings → Docker Compatibility → 打开开关）
+
+# 3. 验证 docker 命令是否可用（开了兼容后）
+docker version    # Server 显示 podman 即成功</code></pre>
+
+<h3>4.2 编写 Dockerfile（分层构建，充分利用缓存）</h3>
+<p>Spring Boot 3.3+ 推荐<b>分层 jar</b> 方式：依赖层不常变、代码层常变，重建镜像时只重新打包代码层：</p>
+<pre><code># ---- 构建阶段 ----
+FROM maven:3.9-eclipse-temurin-21 AS build
+WORKDIR /app
+COPY pom.xml .
+# 先拷 pom 下载依赖，利用镜像层缓存（代码改动不会重新下载依赖）
+RUN mvn dependency:go-offline -B
+COPY src ./src
+RUN mvn package -DskipTests -B
+
+# ---- 运行阶段（只用 JRE，镜像更小）----
+FROM eclipse-temurin:21-jre-alpine
+WORKDIR /app
+RUN addgroup -S spring &amp;&amp; adduser -S spring -G spring
+USER spring
+COPY --from=build /app/target/*.jar app.jar
+EXPOSE 8080
+# 容器感知 JVM 参数：按容器内存配额自动设置堆上限
+ENTRYPOINT ["java", "-XX:MaxRAMPercentage=75.0", "-jar", "app.jar"]</code></pre>
+
+<p>构建并运行：</p>
+<pre><code>podman build -t myapp:1.0 .
+podman run -d --name myapp -p 8080:8080 \
+  -e SPRING_PROFILES_ACTIVE=prod \
+  myapp:1.0
+curl http://localhost:8080/actuator/health</code></pre>
+
+<h3>4.3 三种构建集成方式</h3>
+<table>
+  <tr><th>方式</th><th>说明</th><th>推荐度</th></tr>
+  <tr><td><b>podman build（CLI / Desktop）</b></td><td>手动 mvn package 后 podman build，简单直接</td><td>★★★★★</td></tr>
+  <tr><td><b>fabric8 docker-maven-plugin</b></td><td><code>mvn package docker:build</code> 一键构建，通过 Docker 兼容套接字连接 Podman</td><td>★★★★☆</td></tr>
+  <tr><td><b>Jib</b></td><td>无需 Dockerfile，但输出 tar 后需 <code>podman load</code>（或推 registry），多一步</td><td>★★★☆☆</td></tr>
+  <tr><td><b>Buildpacks（pack build）</b></td><td>零 Dockerfile，需配置 DOCKER_HOST 指向 Podman</td><td>★★★☆☆</td></tr>
+</table>
+
+<p><b>方式一：fabric8 docker-maven-plugin（最贴合 Maven 工作流）</b></p>
+<pre><code>&lt;plugin&gt;
+    &lt;groupId&gt;io.fabric8&lt;/groupId&gt;
+    &lt;artifactId&gt;docker-maven-plugin&lt;/artifactId&gt;
+    &lt;version&gt;0.45.1&lt;/version&gt;
+    &lt;configuration&gt;
+        &lt;images&gt;
+            &lt;image&gt;
+                &lt;name&gt;myapp:${project.version}&lt;/name&gt;
+                &lt;build&gt;
+                    &lt;from&gt;eclipse-temurin:21-jre-alpine&lt;/from&gt;
+                    &lt;assembly&gt;&lt;descriptorRef&gt;artifact&lt;/descriptorRef&gt;&lt;/assembly&gt;
+                    &lt;entryPoint&gt;java -XX:MaxRAMPercentage=75.0 -jar /maven/${project.build.finalName}.jar&lt;/entryPoint&gt;
+                    &lt;ports&gt;&lt;port&gt;8080&lt;/port&gt;&lt;/ports&gt;
+                &lt;/build&gt;
+                &lt;run&gt;&lt;ports&gt;&lt;port&gt;8080:8080&lt;/port&gt;&lt;/ports&gt;&lt;/run&gt;
+            &lt;/image&gt;
+        &lt;/images&gt;
+    &lt;/configuration&gt;
+&lt;/plugin&gt;</code></pre>
+<pre><code>mvn package docker:build          # 构建（走 Docker 兼容套接字）
+mvn docker:run                    # 启动</code></pre>
+
+<p><b>方式二：Jib</b></p>
+<pre><code>mvn compile jib:buildTar -Dimage=myapp:1.0   # 生成 target/jib-image.tar
+podman load -i target/jib-image.tar</code></pre>
+
+<h3>4.4 Compose 编排（Spring Boot + MySQL + Redis）</h3>
+<p><code>compose.yaml</code> 放在项目根目录：</p>
+<pre><code>services:
+  app:
+    image: myapp:1.0
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/demo?useSSL=false
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: secret
+      SPRING_DATA_REDIS_HOST: cache
+    depends_on:
+      db:
+        condition: service_healthy
+      cache:
+        condition: service_started
+
+  db:
+    image: mysql:8.4
+    environment:
+      MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: demo
+    ports:
+      - "3306:3306"
+    volumes:
+      - dbdata:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-psecret"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+
+  cache:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+
+volumes:
+  dbdata:</code></pre>
+
+<pre><code>podman compose up -d      # Podman 5 内置 compose 支持（调用 docker-compose 或 podman-compose）
+podman compose logs -f app
+podman compose down       # 停止并删除（数据卷保留）</code></pre>
+
+<p><b>Spring Boot 自带的 docker-compose 集成也兼容 Podman</b>（只要 Docker 兼容套接字开着）：</p>
+<pre><code>&lt;dependency&gt;
+    &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;
+    &lt;artifactId&gt;spring-boot-docker-compose&lt;/artifactId&gt;
+    &lt;scope&gt;runtime&lt;/scope&gt;
+&lt;/dependency&gt;</code></pre>
+<pre><code># application-dev.yaml：本地开发时自动起依赖容器
+spring:
+  docker:
+    compose:
+      file: compose.yaml
+      lifecycle-management: start-and-stop   # 应用退出时自动停容器</code></pre>
+<p>本地直接跑 <code>SpringApplication</code>，它会自动读取 compose.yaml 帮你把 MySQL/Redis 拉起来——开发体验极好。</p>
+
+<h3>4.5 注意事项清单（踩坑点）</h3>
+
+<div class="card">
+<h3 style="margin-top:0">🌐 网络与端口</h3>
+<ul>
+  <li><b>1. 端口映射语法不变</b>（<code>-p 8080:8080</code>）。rootless 模式绑定 &gt;1024 的端口无任何限制，8080/8443 随便用；绑定 80/443 等特权端口需 rootful 虚拟机（<code>podman machine set --rootful</code>）。</li>
+  <li><b>2. 容器间通信用服务名</b>：compose 网络内用 <code>jdbc:mysql://db:3306</code>（服务名），不要用 localhost——localhost 指容器自己。</li>
+  <li><b>3. Windows 浏览器访问用 localhost</b>：Podman machine 自动做了端口转发，<code>localhost:8080</code> 直接可用。</li>
+</ul>
+</div>
+
+<div class="card">
+<h3 style="margin-top:0">💾 存储与卷</h3>
+<ul>
+  <li><b>4. 优先用命名卷</b>（<code>-v dbdata:/var/lib/mysql</code>），少用 bind mount。Windows 路径 bind mount（<code>-v F:/data:/data</code>）跨 WSL 文件系统走 9p 协议，<b>性能差且权限易出问题</b>；把 MySQL data 目录挂到 Windows 路径会直接报权限错误。</li>
+  <li><b>5. bind mount 写 inode/原子重命名</b>（如日志滚动、临时文件）在 Windows 挂载路径上不可靠。Spring Boot 日志输出到容器内路径再用卷，不要挂到 Windows 目录。</li>
+  <li><b>6. Linux 上部署时的 SELinux</b>：<code>-v ./data:/data:z</code>（本机 Windows 开发可忽略，部署到 RHEL/CentOS 时必须加 <code>:z</code> 或 <code>:Z</code>）。</li>
+</ul>
+</div>
+
+<div class="card">
+<h3 style="margin-top:0">⚙️ JVM 与资源</h3>
+<ul>
+  <li><b>7. 容器感知</b>：JDK 10+ 自动感知 cgroup 内存限制，配合 <code>-XX:MaxRAMPercentage=75.0</code> 留出元空间和线程栈余量，避免容器被 OOM Kill。</li>
+  <li><b>8. 虚拟机内存是硬上限</b>：所有容器共享 podman machine 的内存（默认 4GB），Spring Boot + MySQL + Redis 同时跑很容易顶满，按 4.1 节调大到 8GB。</li>
+  <li><b>9. 限制容器资源</b>：<code>podman run -m 1g --cpus 1</code> 给容器设上限，防止单个容器拖垮整个虚拟机。</li>
+</ul>
+</div>
+
+<div class="card">
+<h3 style="margin-top:0">🔄 生命周期</h3>
+<ul>
+  <li><b>10. 每次重启电脑先 <code>podman machine start</code></b>，否则所有命令报 socket 连接失败。可在 Settings 里开启开机自动启动。</li>
+  <li><b>11. 虚拟机停止后容器全部停止</b>，但<b>数据和镜像不会丢</b>（存在虚拟机磁盘里）；只有 <code>podman machine rm/reset</code> 才会清空。</li>
+  <li><b>12. 重启策略</b>：<code>--restart=always</code> 在本机 machine 环境下意义有限（虚拟机不启动容器不会自启），正式环境交给 systemd 或 K8s。</li>
+</ul>
+</div>
+
+<div class="card">
+<h3 style="margin-top:0">🈶 时区与编码（中文环境必踩）</h3>
+<ul>
+  <li><b>13. 镜像默认 UTC 时区</b>，日志时间差 8 小时。解决：<code>-e TZ=Asia/Shanghai</code>，并在 JDBC URL 加 <code>serverTimezone=Asia/Shanghai</code>。</li>
+  <li><b>14. Alpine 基础镜像缺中文字体</b>：用 POI/iText 导出 PDF/Excel 含中文时，需在 Dockerfile 里安装字体（<code>apk add font-noto-cjk</code>）。</li>
+</ul>
+</div>
+
+<div class="card">
+<h3 style="margin-top:0">🧹 其他</h3>
+<ul>
+  <li><b>15. 镜像源加速</b>：国内拉 Docker Hub 慢，在 Settings → Registries 配置镜像加速地址，或改虚拟机内 <code>/etc/containers/registries.conf</code>。</li>
+  <li><b>16. <code>podman system prune</code> 是把双刃剑</b>：默认不清卷，但 <code>-a --volumes</code> 会删掉所有未使用镜像和卷（包括数据库数据），慎用。</li>
+  <li><b>17. 健康检查</b>：compose 里给 MySQL 加 healthcheck + <code>depends_on.condition</code>，否则 Spring Boot 先于 MySQL 起来会连接失败重试。</li>
+</ul>
+</div>
+
+<h3>4.6 快速验证清单</h3>
+<pre><code>podman machine start                              # ① 虚拟机起来了
+podman run --rm hello-world                       # ② 能拉镜像、能跑容器
+mvn package &amp;&amp; podman build -t myapp:1.0 .        # ③ 业务镜像构建成功
+podman compose up -d &amp;&amp; curl localhost:8080/actuator/health   # ④ 编排+健康检查通过</code></pre>
+
+<!-- ==================== 5 ==================== -->
+<h2 id="s5">5. 常见问题 FAQ</h2>
+
+<div class="card">
+<p><b>Q1：<code>Error: unable to connect to Podman socket</code>？</b><br>
+虚拟机没启动。执行 <code>podman machine start</code>，或在 Dashboard 点 Start。</p>
+<p><b>Q2：<code>docker</code> 命令报找不到 daemon？</b><br>
+Docker 兼容没开启。Settings → Docker Compatibility 打开开关，重启终端。</p>
+<p><b>Q3：MySQL 容器一启动就退出，日志报权限错误？</b><br>
+用了 Windows 路径 bind mount。改用命名卷 <code>dbdata:/var/lib/mysql</code>。</p>
+<p><b>Q4：容器里访问外网慢/失败？</b><br>
+公司代理没传进虚拟机。Settings → Proxy 配置代理，重启 machine。</p>
+<p><b>Q5：Spring Boot 容器日志中文乱码？</b><br>
+加 JVM 参数 <code>-Dfile.encoding=UTF-8</code>（JDK 18+ 默认 UTF-8，一般无需设置），并确认 <code>-e LANG=C.UTF-8</code>。</p>
+<p><b>Q6：怎么把本地镜像给别人？</b><br>
+<code>podman save -o myapp.tar myapp:1.0</code> → 拷贝 tar → 对方 <code>podman load -i myapp.tar</code>。</p>
+</div>
+
+<!-- ==================== 6 ==================== -->
+<h2 id="s6">6. 参考链接</h2>
+<ul>
+  <li>Podman 官方文档：<a href="https://docs.podman.io">https://docs.podman.io</a></li>
+  <li>Podman Desktop 官网：<a href="https://podman-desktop.io">https://podman-desktop.io</a></li>
+  <li>Windows 安装文档：<a href="https://podman-desktop.io/docs/installation/windows-install">https://podman-desktop.io/docs/installation/windows-install</a></li>
+  <li>Spring Boot 容器化与 Compose 支持：<a href="https://docs.spring.io/spring-boot/reference/packaging/container-images.html">https://docs.spring.io/spring-boot/reference/packaging/container-images.html</a></li>
+  <li>fabric8 docker-maven-plugin：<a href="https://github.com/fabric8io/docker-maven-plugin">https://github.com/fabric8io/docker-maven-plugin</a></li>
+</ul>
+
+<footer>Podman 入门与 Podman Desktop 使用指南 ｜ 生成于 2026-10-25</footer>
+</div>
+</body>
+</html>

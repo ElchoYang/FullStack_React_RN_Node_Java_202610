@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MySQL 8.4 配置指南</title>
+<style>
+  :root {
+    --bg: #ffffff;
+    --bg-code: #1e1e2e;
+    --bg-sidebar: #f8f9fb;
+    --text: #2d3436;
+    --text-muted: #636e72;
+    --accent: #00758f;
+    --accent-light: #e6f4f7;
+    --border: #e2e8f0;
+    --tag: #ff6b35;
+    --green: #00b894;
+    --warn: #fdcb6e;
+    --warn-bg: #fff9e6;
+    --shadow: 0 1px 3px rgba(0,0,0,.08);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Microsoft YaHei", sans-serif;
+    color: var(--text); line-height: 1.7; display: flex; min-height: 100vh; background: var(--bg);
+  }
+  nav {
+    width: 270px; background: var(--bg-sidebar); border-right: 1px solid var(--border);
+    padding: 32px 24px; position: sticky; top: 0; height: 100vh; overflow-y: auto; flex-shrink: 0;
+  }
+  nav h2 {
+    font-size: 14px; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 16px;
+  }
+  nav a {
+    display: block; padding: 5px 0; color: var(--text); text-decoration: none; font-size: 13px;
+    border-radius: 4px; transition: color .15s;
+  }
+  nav a:hover { color: var(--accent); }
+  nav a.active { color: var(--accent); font-weight: 600; }
+  main {
+    flex: 1; max-width: 900px; padding: 40px 60px 120px;
+  }
+  .meta { color: var(--text-muted); font-size: 13px; margin-bottom: 24px; }
+  .meta code { background: var(--accent-light); color: var(--accent); padding: 2px 6px; border-radius: 3px; font-size: 13px; }
+  h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+  h2 {
+    font-size: 20px; font-weight: 600; margin: 40px 0 16px; padding-top: 24px; border-top: 1px solid var(--border);
+  }
+  h3 { font-size: 16px; font-weight: 600; margin: 28px 0 10px; }
+  p { margin-bottom: 12px; font-size: 15px; }
+  code {
+    background: #f0f3f5; padding: 2px 6px; border-radius: 3px;
+    font-family: "Cascadia Code", "Fira Code", "Consolas", monospace; font-size: 13px; color: #d63384;
+  }
+  pre {
+    background: var(--bg-code); color: #cdd6f4; border-radius: 8px; padding: 20px 24px;
+    overflow-x: auto; margin: 12px 0 20px; font-size: 13px; line-height: 1.6; position: relative;
+  }
+  pre code { background: none; color: inherit; padding: 0; font-size: 13px; }
+  .copy-btn {
+    position: absolute; top: 8px; right: 12px; background: rgba(255,255,255,.1);
+    border: none; color: #888; padding: 4px 10px; border-radius: 4px; cursor: pointer;
+    font-size: 12px; transition: all .15s;
+  }
+  .copy-btn:hover { background: rgba(255,255,255,.2); color: #fff; }
+  .copy-btn.copied { color: var(--green); }
+  .warn {
+    background: var(--warn-bg); border-left: 4px solid var(--warn);
+    padding: 12px 16px; border-radius: 4px; margin: 16px 0; font-size: 14px;
+  }
+  .warn strong { color: #e17055; }
+  .info-box {
+    background: var(--accent-light); border-left: 4px solid var(--accent);
+    padding: 12px 16px; border-radius: 4px; margin: 16px 0; font-size: 14px;
+  }
+  table {
+    width: 100%; border-collapse: collapse; margin: 16px 0; font-size: 14px;
+  }
+  thead { background: var(--bg-sidebar); }
+  th, td { padding: 10px 14px; text-align: left; border-bottom: 1px solid var(--border); }
+  th { font-weight: 600; color: var(--text-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .5px; }
+  tr:hover td { background: var(--accent-light); }
+  .steps {
+    counter-reset: step; list-style: none; padding-left: 0;
+  }
+  .steps li {
+    counter-increment: step; padding-left: 36px; position: relative; margin-bottom: 20px;
+  }
+  .steps li::before {
+    content: counter(step); position: absolute; left: 0; top: 0;
+    width: 24px; height: 24px; background: var(--accent); color: #fff;
+    border-radius: 50%; text-align: center; line-height: 24px; font-size: 12px; font-weight: 700;
+  }
+  @media (max-width: 768px) {
+    body { flex-direction: column; }
+    nav { width: 100%; height: auto; position: static; border-right: none; border-bottom: 1px solid var(--border); padding: 16px 20px; }
+    main { max-width: 100%; padding: 24px 20px 80px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <h2>目录</h2>
+  <a href="#init">1. 初始化 MySQL</a>
+  <a href="#install-service">2. 安装 Windows 服务</a>
+  <a href="#start-stop">3. 启动 / 停止</a>
+  <a href="#login">4. 登录 MySQL</a>
+  <a href="#change-password">5. 修改 root 密码</a>
+  <a href="#users">6. 用户管理</a>
+  <a href="#myini">7. 配置文件 my.ini</a>
+  <a href="#uninstall">8. 卸载 MySQL</a>
+  <a href="#database">9. 数据库操作</a>
+  <a href="#table-ops">10. 表操作</a>
+  <a href="#backup">11. 备份与恢复</a>
+  <a href="#import-export">12. 数据导入导出</a>
+  <a href="#optimize">13. 性能优化</a>
+  <a href="#quick-ref">常用命令速查</a>
+</nav>
+
+<main>
+  <h1>MySQL 8.4 配置指南</h1>
+  <p class="meta">
+    安装路径：<code>F:\Tools\mysql-8.4.8-winx64</code>
+    &nbsp;|&nbsp;
+    版本：8.4.8 (winx64)
+  </p>
+
+  <!-- ===== 1. 初始化 ===== -->
+  <h2 id="init">1. 初始化 MySQL</h2>
+  <p>以<strong>管理员身份</strong>打开 CMD 或 PowerShell，进入 bin 目录：</p>
+  <pre><code>cd F:\Tools\mysql-8.4.8-winx64\bin</code></pre>
+  <p>初始化数据目录，生成 root 临时密码：</p>
+  <pre><code>mysqld --initialize --console</code></pre>
+  <p>执行后会输出：</p>
+  <pre><code>[Server] A temporary password is generated for root@localhost: <strong>aB3x!pQr9#sZ</strong></code></pre>
+  <div class="warn"><strong>注意：</strong>务必记下这个临时密码，首次登录必须要用。</div>
+
+  <!-- ===== 2. 安装服务 ===== -->
+  <h2 id="install-service">2. 安装 Windows 服务</h2>
+  <p>以<strong>管理员身份</strong>执行：</p>
+  <pre><code>cd F:\Tools\mysql-8.4.8-winx64\bin
+mysqld --install MySQL84</code></pre>
+  <p>输出：<code>Service successfully installed.</code></p>
+  <h3>自定义服务名</h3>
+  <pre><code>mysqld --install MySQL8.4</code></pre>
+  <h3>删除服务</h3>
+  <pre><code>mysqld --remove MySQL84</code></pre>
+
+  <!-- ===== 3. 启动/停止 ===== -->
+  <h2 id="start-stop">3. 启动 / 停止 MySQL</h2>
+  <table>
+    <thead><tr><th>方式</th><th>启动</th><th>停止</th><th>重启</th></tr></thead>
+    <tbody>
+      <tr><td>CMD</td><td><code>net start MySQL84</code></td><td><code>net stop MySQL84</code></td><td>—</td></tr>
+      <tr><td>PowerShell</td><td><code>Start-Service MySQL84</code></td><td><code>Stop-Service MySQL84</code></td><td><code>Restart-Service MySQL84</code></td></tr>
+      <tr><td>服务管理器</td><td colspan="3"><code>Win+R</code> → <code>services.msc</code> → 右键操作</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ===== 4. 登录 ===== -->
+  <h2 id="login">4. 登录 MySQL</h2>
+  <pre><code>cd F:\Tools\mysql-8.4.8-winx64\bin
+mysql -u root -p</code></pre>
+  <p>输入初始化时生成的<strong>临时密码</strong>。首次登录后必须先改密码：</p>
+  <pre><code>ALTER USER 'root'@'localhost' IDENTIFIED BY 'YourNewPassword123!';
+FLUSH PRIVILEGES;</code></pre>
+
+  <!-- ===== 5. 修改密码 ===== -->
+  <h2 id="change-password">5. 修改 root 密码</h2>
+  <pre><code>ALTER USER 'root'@'localhost' IDENTIFIED BY 'NewPassword123!';</code></pre>
+
+  <h3>忘记密码 —— 重置方法</h3>
+  <ol class="steps">
+    <li><strong>停止 MySQL 服务</strong><pre><code>net stop MySQL84</code></pre></li>
+    <li><strong>跳过权限验证启动</strong><pre><code>mysqld --skip-grant-tables --console</code></pre><p>保持此窗口不要关闭。</p></li>
+    <li><strong>新开 CMD，无密码登录</strong><pre><code>mysql -u root</code></pre></li>
+    <li><strong>重置密码</strong><pre><code>FLUSH PRIVILEGES;
+ALTER USER 'root'@'localhost' IDENTIFIED BY 'NewPassword123!';</code></pre></li>
+    <li><strong>关闭 skip-grant-tables 窗口，重新启动服务</strong><pre><code>net start MySQL84</code></pre></li>
+  </ol>
+
+  <!-- ===== 6. 用户管理 ===== -->
+  <h2 id="users">6. 用户管理</h2>
+  <h3>创建用户</h3>
+  <table>
+    <thead><tr><th>场景</th><th>命令</th></tr></thead>
+    <tbody>
+      <tr><td>本地用户</td><td><code>CREATE USER 'myuser'@'localhost' IDENTIFIED BY 'MyPass123!';</code></td></tr>
+      <tr><td>允许远程连接</td><td><code>CREATE USER 'myuser'@'%' IDENTIFIED BY 'MyPass123!';</code></td></tr>
+    </tbody>
+  </table>
+  <h3>授权</h3>
+  <table>
+    <thead><tr><th>场景</th><th>命令</th></tr></thead>
+    <tbody>
+      <tr><td>某个库全部权限</td><td><code>GRANT ALL PRIVILEGES ON mydb.* TO 'myuser'@'localhost';</code></td></tr>
+      <tr><td>所有库全部权限</td><td><code>GRANT ALL PRIVILEGES ON *.* TO 'myuser'@'localhost' WITH GRANT OPTION;</code></td></tr>
+      <tr><td>只读权限</td><td><code>GRANT SELECT ON mydb.* TO 'readonly'@'localhost';</code></td></tr>
+    </tbody>
+  </table>
+  <h3>其他操作</h3>
+  <table>
+    <thead><tr><th>操作</th><th>命令</th></tr></thead>
+    <tbody>
+      <tr><td>查看所有用户</td><td><code>SELECT user, host FROM mysql.user;</code></td></tr>
+      <tr><td>修改密码</td><td><code>ALTER USER 'myuser'@'localhost' IDENTIFIED BY 'NewPass123!';</code></td></tr>
+      <tr><td>删除用户</td><td><code>DROP USER 'myuser'@'localhost';</code></td></tr>
+      <tr><td>撤销权限</td><td><code>REVOKE ALL PRIVILEGES, GRANT OPTION FROM 'myuser'@'localhost';</code></td></tr>
+    </tbody>
+  </table>
+
+  <!-- ===== 7. my.ini ===== -->
+  <h2 id="myini">7. 配置文件 my.ini</h2>
+  <p>在 <code>F:\Tools\mysql-8.4.8-winx64\</code> 下创建 <code>my.ini</code>：</p>
+  <pre><code>[mysqld]
+# 基础设置
+port=3306
+basedir=F:/Tools/mysql-8.4.8-winx64
+datadir=F:/Tools/mysql-8.4.8-winx64/data
+
+# 字符集
+character-set-server=utf8mb4
+collation-server=utf8mb4_unicode_ci
+
+# 连接设置
+max_connections=200
+max_connect_errors=100
+
+# 日志
+log-error=F:/Tools/mysql-8.4.8-winx64/data/mysql-error.log
+general-log=0
+
+# InnoDB
+innodb_buffer_pool_size=256M
+innodb_log_file_size=64M
+
+# 认证插件（兼容旧客户端）
+default_authentication_plugin=mysql_native_password
+
+[mysql]
+default-character-set=utf8mb4
+
+[client]
+default-character-set=utf8mb4</code></pre>
+  <div class="warn"><strong>注意：</strong>路径必须用正斜杠 <code>/</code>，不要用反斜杠 <code>\</code>。修改后需重启服务。</div>
+
+  <!-- ===== 8. 卸载 ===== -->
+  <h2 id="uninstall">8. 卸载 MySQL</h2>
+  <pre><code>net stop MySQL84
+mysqld --remove MySQL84
+rmdir /s /q F:\Tools\mysql-8.4.8-winx64</code></pre>
+
+  <!-- ===== 9. 数据库操作 ===== -->
+  <h2 id="database">9. 数据库操作</h2>
+
+  <h3>创建数据库</h3>
+  <pre><code>-- 基础创建
+CREATE DATABASE mydb;
+
+-- 指定字符集和排序规则（推荐）
+CREATE DATABASE mydb
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;
+
+-- 仅当不存在时创建
+CREATE DATABASE IF NOT EXISTS mydb
+  CHARACTER SET utf8mb4
+  COLLATE utf8mb4_unicode_ci;</code></pre>
+
+  <h3>查看 / 选择 / 修改 / 删除</h3>
+  <table>
+    <thead><tr><th>操作</th><th>命令</th></tr></thead>
+    <tbody>
+      <tr><td>列出所有数据库</td><td><code>SHOW DATABASES;</code></td></tr>
+      <tr><td>查看建库语句</td><td><code>SHOW CREATE DATABASE mydb;</code></td></tr>
+      <tr><td>选择数据库</td><td><code>USE mydb;</code></td></tr>
+      <tr><td>修改字符集</td><td><code>ALTER DATABASE mydb CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;</code></td></tr>
+      <tr><td>删除数据库</td><td><code>DROP DATABASE IF EXISTS mydb;</code></td></tr>
+    </tbody>
+  </table>
+  <div class="warn"><strong>⚠️ DROP DATABASE 不可恢复，请谨慎操作。</strong></div>
+
+  <h3>字符集选择</h3>
+  <table>
+    <thead><tr><th>字符集</th><th>说明</th><th>推荐</th></tr></thead>
+    <tbody>
+      <tr><td><code>utf8mb4</code></td><td>完整 UTF-8，支持 emoji</td><td>✅ 推荐</td></tr>
+      <tr><td><code>utf8</code></td><td>MySQL 阉割版，最多 3 字节</td><td>❌ 不推荐</td></tr>
+      <tr><td><code>gbk</code></td><td>中文编码</td><td>仅兼容老系统</td></tr>
+      <tr><td><code>latin1</code></td><td>西欧编码</td><td>仅特殊场景</td></tr>
+    </tbody>
+  </table>
+
+  <h3>常用排序规则</h3>
+  <table>
+    <thead><tr><th>排序规则</th><th>大小写</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td><code>utf8mb4_unicode_ci</code></td><td>不区分 ✅</td><td>Unicode 标准排序，推荐</td></tr>
+      <tr><td><code>utf8mb4_general_ci</code></td><td>不区分</td><td>快速但不精确</td></tr>
+      <tr><td><code>utf8mb4_bin</code></td><td>区分</td><td>二进制比较，区分大小写</td></tr>
+    </tbody>
+  </table>
+
+  <!-- ===== 10. 表操作 ===== -->
+  <h2 id="table-ops">10. 表操作</h2>
+
+  <h3>创建表（完整示例）</h3>
+  <pre><code>CREATE TABLE users (
+  id         INT AUTO_INCREMENT PRIMARY KEY COMMENT '主键ID',
+  username   VARCHAR(50)  NOT NULL UNIQUE COMMENT '用户名',
+  email      VARCHAR(100) NOT NULL COMMENT '邮箱',
+  age        TINYINT UNSIGNED DEFAULT 0 COMMENT '年龄',
+  balance    DECIMAL(10,2) DEFAULT 0.00 COMMENT '余额',
+  is_active  TINYINT(1) DEFAULT 1 COMMENT '是否激活',
+  created_at DATETIME DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  updated_at DATETIME DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新时间',
+  INDEX idx_username (username),
+  INDEX idx_email (email)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci COMMENT='用户表';</code></pre>
+
+  <h3>常用字段类型</h3>
+  <table>
+    <thead><tr><th>类型</th><th>用途</th><th>示例</th></tr></thead>
+    <tbody>
+      <tr><td><code>INT</code></td><td>整数</td><td><code>age INT</code></td></tr>
+      <tr><td><code>BIGINT</code></td><td>大整数（ID）</td><td><code>id BIGINT AUTO_INCREMENT</code></td></tr>
+      <tr><td><code>TINYINT(1)</code></td><td>布尔值</td><td><code>is_deleted TINYINT(1) DEFAULT 0</code></td></tr>
+      <tr><td><code>VARCHAR(N)</code></td><td>变长字符串</td><td><code>name VARCHAR(100)</code></td></tr>
+      <tr><td><code>TEXT / LONGTEXT</code></td><td>长文本</td><td><code>content TEXT</code></td></tr>
+      <tr><td><code>DECIMAL(M,D)</code></td><td>精确小数（金额）</td><td><code>price DECIMAL(10,2)</code></td></tr>
+      <tr><td><code>DATETIME</code></td><td>日期时间</td><td><code>created_at DATETIME</code></td></tr>
+      <tr><td><code>DATE</code></td><td>日期</td><td><code>birthday DATE</code></td></tr>
+      <tr><td><code>JSON</code></td><td>JSON 对象</td><td><code>extra JSON</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>修改表结构</h3>
+  <table>
+    <thead><tr><th>操作</th><th>命令</th></tr></thead>
+    <tbody>
+      <tr><td>添加列</td><td><code>ALTER TABLE users ADD COLUMN phone VARCHAR(20) AFTER email;</code></td></tr>
+      <tr><td>修改列类型</td><td><code>ALTER TABLE users MODIFY COLUMN username VARCHAR(80);</code></td></tr>
+      <tr><td>重命名列</td><td><code>ALTER TABLE users CHANGE COLUMN phone mobile VARCHAR(20);</code></td></tr>
+      <tr><td>删除列</td><td><code>ALTER TABLE users DROP COLUMN age;</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>查看表</h3>
+  <table>
+    <thead><tr><th>操作</th><th>命令</th></tr></thead>
+    <tbody>
+      <tr><td>列出所有表</td><td><code>SHOW TABLES;</code></td></tr>
+      <tr><td>查看表结构</td><td><code>DESC users;</code> 或 <code>DESCRIBE users;</code></td></tr>
+      <tr><td>查看建表语句</td><td><code>SHOW CREATE TABLE users;</code></td></tr>
+      <tr><td>查看表详情</td><td><code>SHOW TABLE STATUS;</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>删除与清空</h3>
+  <table>
+    <thead><tr><th>操作</th><th>命令</th><th>可回滚</th></tr></thead>
+    <tbody>
+      <tr><td>删除表</td><td><code>DROP TABLE IF EXISTS users;</code></td><td>❌</td></tr>
+      <tr><td>清空表（重置自增 ID）</td><td><code>TRUNCATE TABLE users;</code></td><td>❌</td></tr>
+      <tr><td>清空表（可回滚）</td><td><code>DELETE FROM users;</code></td><td>✅</td></tr>
+    </tbody>
+  </table>
+
+  <h3>索引操作</h3>
+  <table>
+    <thead><tr><th>操作</th><th>命令</th></tr></thead>
+    <tbody>
+      <tr><td>创建普通索引</td><td><code>CREATE INDEX idx_name ON users (username);</code></td></tr>
+      <tr><td>创建唯一索引</td><td><code>CREATE UNIQUE INDEX uk_email ON users (email);</code></td></tr>
+      <tr><td>创建联合索引</td><td><code>CREATE INDEX idx_name_age ON users (username, age);</code></td></tr>
+      <tr><td>查看索引</td><td><code>SHOW INDEX FROM users;</code></td></tr>
+      <tr><td>删除索引</td><td><code>DROP INDEX idx_name ON users;</code></td></tr>
+    </tbody>
+  </table>
+
+  <!-- ===== 11. 备份与恢复 ===== -->
+  <h2 id="backup">11. 备份与恢复</h2>
+
+  <h3>mysqldump 备份常用命令</h3>
+  <table>
+    <thead><tr><th>场景</th><th>命令（CMD 下执行）</th></tr></thead>
+    <tbody>
+      <tr><td>备份单个库</td><td><code>mysqldump -u root -p --databases mydb &gt; D:\backup\mydb.sql</code></td></tr>
+      <tr><td>备份所有库</td><td><code>mysqldump -u root -p --all-databases &gt; D:\backup\all.sql</code></td></tr>
+      <tr><td>只备份表结构</td><td><code>mysqldump -u root -p --no-data mydb &gt; D:\backup\schema.sql</code></td></tr>
+      <tr><td>只备份数据</td><td><code>mysqldump -u root -p --no-create-info mydb &gt; D:\backup\data.sql</code></td></tr>
+      <tr><td>备份指定表</td><td><code>mysqldump -u root -p mydb users orders &gt; D:\backup\tables.sql</code></td></tr>
+      <tr><td>忽略某表</td><td><code>mysqldump -u root -p mydb --ignore-table=mydb.logs &gt; D:\backup\no_logs.sql</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>定时备份（Windows 批处理）</h3>
+  <p>创建 <code>F:\Tools\mysql_backup_daily.bat</code>：</p>
+  <pre><code>@echo off
+setlocal
+set DATE=%date:~0,4%%date:~5,2%%date:~8,2%
+set BACKUP_DIR=D:\backup\mysql
+if not exist %BACKUP_DIR% mkdir %BACKUP_DIR%
+
+cd F:\Tools\mysql-8.4.8-winx64\bin
+mysqldump -u root -pYourPassword --databases mydb &gt; %BACKUP_DIR%\mydb_%DATE%.sql
+
+:: 删除 7 天前的备份
+forfiles /p %BACKUP_DIR% /m *.sql /d -7 /c "cmd /c del @path" 2&gt;nul
+echo Backup completed: mydb_%DATE%.sql</code></pre>
+  <div class="info-box">在 <strong>taskschd.msc</strong>（任务计划程序）中创建每日定时任务执行此脚本。</div>
+
+  <h3>恢复数据</h3>
+  <table>
+    <thead><tr><th>场景</th><th>命令（CMD 下执行）</th></tr></thead>
+    <tbody>
+      <tr><td>恢复到指定库</td><td><code>mysql -u root -p mydb &lt; D:\backup\mydb.sql</code></td></tr>
+      <tr><td>恢复含建库语句的备份</td><td><code>mysql -u root -p &lt; D:\backup\mydb_full.sql</code></td></tr>
+      <tr><td>恢复所有数据库</td><td><code>mysql -u root -p &lt; D:\backup\all.sql</code></td></tr>
+    </tbody>
+  </table>
+
+  <!-- ===== 12. 导入导出 ===== -->
+  <h2 id="import-export">12. 数据导入导出</h2>
+
+  <h3>SELECT INTO OUTFILE（导出 CSV）</h3>
+  <pre><code>-- 需要 FILE 权限
+SELECT * FROM users
+INTO OUTFILE 'D:/backup/users.csv'
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n';</code></pre>
+
+  <h3>LOAD DATA INFILE（从 CSV 导入）</h3>
+  <pre><code>LOAD DATA INFILE 'D:/backup/users.csv'
+INTO TABLE users
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;  -- 跳过表头</code></pre>
+
+  <h3>命令行批量执行</h3>
+  <table>
+    <thead><tr><th>操作</th><th>命令</th></tr></thead>
+    <tbody>
+      <tr><td>执行 SQL 文件</td><td><code>mysql -u root -p mydb &lt; script.sql</code></td></tr>
+      <tr><td>直接执行 SQL</td><td><code>mysql -u root -p -e "SHOW DATABASES;"</code></td></tr>
+      <tr><td>导出查询结果</td><td><code>mysql -u root -p mydb -B -e "SELECT * FROM users;" &gt; result.csv</code></td></tr>
+    </tbody>
+  </table>
+
+  <!-- ===== 13. 性能优化 ===== -->
+  <h2 id="optimize">13. 性能优化配置</h2>
+
+  <h3>查看运行状态</h3>
+  <table>
+    <thead><tr><th>操作</th><th>命令</th></tr></thead>
+    <tbody>
+      <tr><td>所有配置变量</td><td><code>SHOW VARIABLES;</code></td></tr>
+      <tr><td>运行状态</td><td><code>SHOW STATUS;</code></td></tr>
+      <tr><td>InnoDB 状态</td><td><code>SHOW ENGINE INNODB STATUS;</code></td></tr>
+      <tr><td>当前连接</td><td><code>SHOW PROCESSLIST;</code></td></tr>
+      <tr><td>最大连接数</td><td><code>SHOW VARIABLES LIKE 'max_connections';</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>慢查询日志</h3>
+  <pre><code>-- 临时开启
+SET GLOBAL slow_query_log = ON;
+SET GLOBAL long_query_time = 2;  -- 超过 2 秒记录
+
+-- 查看日志位置
+SHOW VARIABLES LIKE 'slow_query_log_file';
+SHOW STATUS LIKE 'Slow_queries';</code></pre>
+  <p>在 <code>my.ini</code> 中永久配置：</p>
+  <pre><code>slow_query_log=1
+slow_query_log_file=F:/Tools/mysql-8.4.8-winx64/data/mysql-slow.log
+long_query_time=2
+log_queries_not_using_indexes=1</code></pre>
+
+  <h3>执行计划分析</h3>
+  <pre><code>-- 分析 SQL 执行计划
+EXPLAIN SELECT * FROM users WHERE username = 'admin';
+
+-- JSON 格式详细分析
+EXPLAIN FORMAT=JSON SELECT * FROM users WHERE age > 18;
+
+-- 实际执行分析（MySQL 8.0.18+）
+EXPLAIN ANALYZE SELECT * FROM users WHERE age > 18;</code></pre>
+
+  <h3>表维护</h3>
+  <table>
+    <thead><tr><th>操作</th><th>命令</th><th>说明</th></tr></thead>
+    <tbody>
+      <tr><td>整理碎片</td><td><code>OPTIMIZE TABLE users;</code></td><td>回收空间，整理索引</td></tr>
+      <tr><td>更新统计</td><td><code>ANALYZE TABLE users;</code></td><td>更新索引统计，优化查询计划</td></tr>
+      <tr><td>检查错误</td><td><code>CHECK TABLE users;</code></td><td>检测表是否损坏</td></tr>
+      <tr><td>修复表</td><td><code>REPAIR TABLE users;</code></td><td>仅 MyISAM 支持</td></tr>
+    </tbody>
+  </table>
+
+  <h3>InnoDB 关键参数</h3>
+  <pre><code>[mysqld]
+innodb_buffer_pool_size=512M     # 缓冲池（物理内存 50-70%）
+innodb_log_file_size=256M         # 日志文件大小
+innodb_flush_log_at_trx_commit=2  # 2=性能优先, 1=安全优先
+innodb_lock_wait_timeout=50       # 锁等待超时（秒）
+innodb_io_capacity=200            # IO 吞吐（SSD 可调高）</code></pre>
+
+  <h3>InnoDB vs MyISAM</h3>
+  <table>
+    <thead><tr><th>特性</th><th>InnoDB</th><th>MyISAM</th></tr></thead>
+    <tbody>
+      <tr><td>事务支持</td><td>✅</td><td>❌</td></tr>
+      <tr><td>行级锁</td><td>✅</td><td>❌（表锁）</td></tr>
+      <tr><td>外键</td><td>✅</td><td>❌</td></tr>
+      <tr><td>崩溃恢复</td><td>✅</td><td>❌</td></tr>
+      <tr><td>推荐场景</td><td>通用 / OLTP</td><td>只读 / 日志</td></tr>
+    </tbody>
+  </table>
+  <div class="info-box"><strong>建议：</strong>默认使用 InnoDB，除非在只读数据仓库等特殊场景才考虑 MyISAM。</div>
+
+  <!-- ===== 速查 ===== -->
+  <h2 id="quick-ref">常用命令速查</h2>
+  <table>
+    <thead><tr><th>操作</th><th>命令</th></tr></thead>
+    <tbody>
+      <tr><td>启动</td><td><code>net start MySQL84</code></td></tr>
+      <tr><td>停止</td><td><code>net stop MySQL84</code></td></tr>
+      <tr><td>登录</td><td><code>mysql -u root -p</code></td></tr>
+      <tr><td>查看数据库</td><td><code>SHOW DATABASES;</code></td></tr>
+      <tr><td>创建数据库</td><td><code>CREATE DATABASE mydb CHARSET utf8mb4;</code></td></tr>
+      <tr><td>切换数据库</td><td><code>USE dbname;</code></td></tr>
+      <tr><td>查看表</td><td><code>SHOW TABLES;</code></td></tr>
+      <tr><td>查看表结构</td><td><code>DESC tablename;</code></td></tr>
+      <tr><td>备份</td><td><code>mysqldump -u root -p --databases db &gt; backup.sql</code></td></tr>
+      <tr><td>恢复</td><td><code>mysql -u root -p db &lt; backup.sql</code></td></tr>
+      <tr><td>查看进程</td><td><code>SHOW PROCESSLIST;</code></td></tr>
+      <tr><td>退出</td><td><code>EXIT;</code> 或 <code>QUIT;</code></td></tr>
+      <tr><td>状态</td><td><code>sc query MySQL84</code></td></tr>
+      <tr><td>版本</td><td><code>mysql --version</code></td></tr>
+    </tbody>
+  </table>
+
+  <h3>添加 PATH（可选）</h3>
+  <pre><code>setx PATH "%PATH%;F:\Tools\mysql-8.4.8-winx64\bin"</code></pre>
+
+  <h3>端口与远程访问</h3>
+  <table>
+    <thead><tr><th>设置</th><th>值</th></tr></thead>
+    <tbody>
+      <tr><td>默认端口</td><td>3306</td></tr>
+      <tr><td>本地防火墙</td><td>本地开发无需开放</td></tr>
+      <tr><td>远程访问</td><td>需开放 3306 端口 + <code>bind-address=0.0.0.0</code></td></tr>
+    </tbody>
+  </table>
+</main>
+
+<script>
+document.querySelectorAll('pre').forEach(pre => {
+  const btn = document.createElement('button');
+  btn.className = 'copy-btn';
+  btn.textContent = '复制';
+  btn.onclick = () => {
+    const code = pre.querySelector('code') || pre;
+    navigator.clipboard.writeText(code.textContent).then(() => {
+      btn.textContent = '已复制';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '复制'; btn.classList.remove('copied'); }, 1500);
+    });
+  };
+  pre.style.position = 'relative';
+  pre.appendChild(btn);
+});
+</script>
+</body>
+</html>

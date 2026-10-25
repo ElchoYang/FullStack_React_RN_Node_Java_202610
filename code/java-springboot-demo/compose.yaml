@@ -1,1 +1,30 @@
-services: { }
+services:
+  # MySQL 8.0 数据库服务
+  mysql:
+    image: 'mysql:8.0'
+    container_name: demo-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 'root'
+      MYSQL_DATABASE: 'boot_demo'
+      MYSQL_USER: 'demo_user'
+      MYSQL_PASSWORD: 'password'
+    ports:
+      - '3306:3306'
+    volumes:
+      - mysql-data:/var/lib/mysql
+
+  # Redis 缓存服务
+  redis:
+    image: 'redis:alpine'
+    container_name: demo-redis
+    restart: always
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+
+volumes:
+  mysql-data:
+  redis-data:
+
