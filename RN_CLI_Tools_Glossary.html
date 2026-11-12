@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>React Native CLI 核心工具与术语速查手册</title>
+  <style>
+    :root {
+      --primary: #2563eb;
+      --primary-light: #eff6ff;
+      --primary-dark: #1d4ed8;
+      --text-main: #1e293b;
+      --text-muted: #64748b;
+      --bg-page: #f8fafc;
+      --bg-card: #ffffff;
+      --border-color: #e2e8f0;
+      --code-bg: #f1f5f9;
+      --tag-rn: #0ea5e9;
+      --tag-fe: #8b5cf6;
+      --tag-android: #10b981;
+      --tag-ios: #f43f5e;
+      --tag-lib: #f59e0b;
+      --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.07), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+      --shadow-hover: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      background-color: var(--bg-page);
+      color: var(--text-main);
+      line-height: 1.6;
+      padding: 24px;
+    }
+
+    .container {
+      max-width: 1300px;
+      margin: 0 auto;
+    }
+
+    /* 顶部标题区 */
+    header {
+      background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #38bdf8 100%);
+      color: white;
+      padding: 40px 32px;
+      border-radius: 16px;
+      margin-bottom: 28px;
+      box-shadow: var(--shadow);
+    }
+
+    header h1 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    header p {
+      font-size: 1.05rem;
+      opacity: 0.92;
+      max-width: 800px;
+    }
+
+    .meta-bar {
+      margin-top: 18px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+      font-size: 0.9rem;
+    }
+
+    .meta-badge {
+      background: rgba(255, 255, 255, 0.2);
+      padding: 4px 12px;
+      border-radius: 9999px;
+      backdrop-filter: blur(4px);
+    }
+
+    /* 快捷搜索与分类过滤 */
+    .controls {
+      background: var(--bg-card);
+      padding: 20px 24px;
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      box-shadow: var(--shadow);
+      margin-bottom: 28px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 16px;
+      z-index: 100;
+    }
+
+    .search-box {
+      flex: 1;
+      min-width: 280px;
+      position: relative;
+    }
+
+    .search-box input {
+      width: 100%;
+      padding: 11px 16px 11px 40px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      font-size: 0.95rem;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .search-box input:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.15);
+    }
+
+    .search-box svg {
+      position: absolute;
+      left: 14px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      width: 18px;
+      height: 18px;
+    }
+
+    .filter-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 8px 16px;
+      border: 1px solid var(--border-color);
+      background: white;
+      color: var(--text-muted);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.2s;
+    }
+
+    .tab-btn:hover {
+      background: var(--code-bg);
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* 概览表格 */
+    .section-title {
+      font-size: 1.45rem;
+      font-weight: 700;
+      color: var(--text-main);
+      margin: 36px 0 16px 0;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .table-container {
+      background: var(--bg-card);
+      border-radius: 12px;
+      border: 1px solid var(--border-color);
+      overflow-x: auto;
+      box-shadow: var(--shadow);
+      margin-bottom: 36px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.92rem;
+    }
+
+    th {
+      background: #f8fafc;
+      color: #475569;
+      font-weight: 600;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-color);
+      white-space: nowrap;
+    }
+
+    td {
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--border-color);
+      vertical-align: top;
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover td {
+      background-color: #f8fafc;
+    }
+
+    .tool-link {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .tool-link:hover {
+      text-decoration: underline;
+    }
+
+    /* 标签 Badge */
+    .badge {
+      display: inline-block;
+      font-size: 0.75rem;
+      font-weight: 600;
+      padding: 3px 8px;
+      border-radius: 6px;
+      white-space: nowrap;
+    }
+
+    .badge-rn { background: #e0f2fe; color: #0284c7; }
+    .badge-fe { background: #f3e8ff; color: #7c3aed; }
+    .badge-android { background: #d1fae5; color: #059669; }
+    .badge-ios { background: #ffe4e6; color: #e11d48; }
+    .badge-lib { background: #fef3c7; color: #d97706; }
+
+    /* 详情卡片流 */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 22px;
+      box-shadow: var(--shadow);
+      transition: transform 0.2s, box-shadow 0.2s;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-hover);
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .card-title {
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .card-sub {
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .field-block {
+      margin-bottom: 12px;
+    }
+
+    .field-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .field-content {
+      font-size: 0.92rem;
+      color: #334155;
+    }
+
+    /* 代码块与行内代码 */
+    code {
+      font-family: Consolas, Monaco, "Courier New", monospace;
+      font-size: 0.88em;
+      background: var(--code-bg);
+      color: #b91c1c;
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid #e2e8f0;
+    }
+
+    pre {
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      overflow-x: auto;
+      margin-top: 6px;
+      font-family: Consolas, Monaco, "Courier New", monospace;
+    }
+
+    pre code {
+      background: transparent;
+      color: inherit;
+      padding: 0;
+      border: none;
+    }
+
+    .copy-btn {
+      float: right;
+      font-size: 0.72rem;
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      color: #94a3b8;
+      padding: 2px 6px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.25);
+      color: #fff;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 48px;
+      padding-top: 24px;
+      color: var(--text-muted);
+      font-size: 0.88rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .highlight {
+      background-color: #fef08a;
+      padding: 1px 4px;
+      border-radius: 2px;
+    }
+
+    @media (max-width: 768px) {
+      body { padding: 12px; }
+      .cards-grid { grid-template-columns: 1fr; }
+      header { padding: 24px 20px; }
+      header h1 { font-size: 1.6rem; }
+      .controls { flex-direction: column; align-items: stretch; }
+      .filter-tabs { justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <!-- 头部介绍 -->
+  <header>
+    <h1>⚛️ React Native CLI 工具与术语速查手册</h1>
+    <p>整理自 <code>RN_Cli_Demo</code> 官方纯原生工程，包含 React Native 核心体系、前端转译规范、Android 原生 Gradle/Kotlin 构建、iOS 原生 CocoaPods/Swift 构建及生态库的核心知识点。</p>
+    <div class="meta-bar">
+      <span class="meta-badge">React Native 0.88+</span>
+      <span class="meta-badge">React 19</span>
+      <span class="meta-badge">Android (Kotlin / Gradle 8+)</span>
+      <span class="meta-badge">iOS (Swift / CocoaPods)</span>
+      <span class="meta-badge">TypeScript 6</span>
+    </div>
+  </header>
+
+  <!-- 搜索与分类导航 -->
+  <div class="controls">
+    <div class="search-box">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+      </svg>
+      <input type="text" id="searchInput" placeholder="搜索工具词汇、文件、命令或关键字（例如：Metro, Podfile, 打包, 签名）..." oninput="handleFilter()">
+    </div>
+    <div class="filter-tabs">
+      <button class="tab-btn active" data-cat="all" onclick="filterCategory('all', this)">全部 (26)</button>
+      <button class="tab-btn" data-cat="rn" onclick="filterCategory('rn', this)">⚛️ RN 核心</button>
+      <button class="tab-btn" data-cat="fe" onclick="filterCategory('fe', this)">🛠️ 前端/工程化</button>
+      <button class="tab-btn" data-cat="android" onclick="filterCategory('android', this)">🤖 Android 原生</button>
+      <button class="tab-btn" data-cat="ios" onclick="filterCategory('ios', this)">🍎 iOS 原生</button>
+      <button class="tab-btn" data-cat="lib" onclick="filterCategory('lib', this)">📦 核心生态库</button>
+    </div>
+  </div>
+
+  <!-- 汇总速查表 -->
+  <h2 class="section-title">
+    <span>📋 全览速查表格</span>
+    <span style="font-size: 0.9rem; font-weight: normal; color: var(--text-muted);">(点击名称可跳转至详情卡片)</span>
+  </h2>
+  <div class="table-container">
+    <table>
+      <thead>
+        <tr>
+          <th>分类</th>
+          <th>工具 / 词汇</th>
+          <th>关联文件 / 位置</th>
+          <th>一句话定义 (是什么)</th>
+          <th>主要用途 (用于什么)</th>
+          <th>高频使用方式 (怎么用)</th>
+        </tr>
+      </thead>
+      <tbody id="summaryTableBody">
+        <!-- 由 JavaScript 动态渲染表格行 -->
+      </tbody>
+    </table>
+  </div>
+
+  <!-- 详细卡片视图 -->
+  <h2 class="section-title">
+    <span>📖 词汇深度详解</span>
+  </h2>
+  <div class="cards-grid" id="cardsGrid">
+    <!-- 由 JavaScript 动态渲染卡片 -->
+  </div>
+
+  <footer>
+    <p>React Native CLI 开发者参考手册 · 生成时间：2026年11月 · 方便随时双击打开离线查阅</p>
+  </footer>
+</div>
+
+<script>
+// 数据源定义
+const toolsData = [
+  // --- 1. RN 核心 ---
+  {
+    id: "rn-cli",
+    cat: "rn",
+    catName: "RN 核心",
+    badgeClass: "badge-rn",
+    name: "React Native CLI",
+    sub: "@react-native-community/cli",
+    file: "package.json / 全局",
+    what: "React Native 官方社区维护的<b>纯原生脚手架与命令行工具包</b>。",
+    why: "用于创建包含完整 <code>android/</code> 和 <code>ios/</code> 源码的纯原生工程，执行原生编译打包、启动本地 Metro 调试服务以及管理原生环境链接。",
+    how: `<code>npx @react-native-community/cli init 项目名</code>  # 创建新项目
+<code>npm run android</code>  # 编译并部署到 Android 模拟器或真机
+<code>npm run ios</code>      # 编译并部署到 iOS 模拟器 (需 macOS)
+<code>npm start</code>        # 启动 Metro 代码打包服务`
+  },
+  {
+    id: "metro",
+    cat: "rn",
+    catName: "RN 核心",
+    badgeClass: "badge-rn",
+    name: "Metro Bundler",
+    sub: "JavaScript 打包器",
+    file: "metro.config.js",
+    what: "Meta 专为 React Native 打造的<b>超高速 JavaScript 代码打包器</b> (类似于 Web 领域的 Webpack 或 Vite)。",
+    why: "将 TypeScript/JSX 源码、第三方库以及静态资源快速编译合并为一个或多个 JS Bundle (如 <code>index.bundle</code>)，并提供秒级 Fast Refresh (快速热重载) 开发服务器。",
+    how: `运行 <code>npm start</code> 或 <code>npx react-native start</code> 启动；
+在 <code>metro.config.js</code> 中配置路径别名、添加额外资源格式 (如 .svg, .obj)：
+<code>const {getDefaultConfig, mergeConfig} = require('@react-native/metro-config');
+module.exports = mergeConfig(getDefaultConfig(__dirname), { /* custom */ });</code>`
+  },
+  {
+    id: "app-registry",
+    cat: "rn",
+    catName: "RN 核心",
+    badgeClass: "badge-rn",
+    name: "AppRegistry",
+    sub: "应用注册中心",
+    file: "index.js",
+    what: "React Native JavaScript 运行时运行所有应用的 <b>JS 端根入口对象</b>。",
+    why: "充当 JS 世界与原生容器的接头人。在应用启动时，原生端（Android 的 MainActivity / iOS 的 AppDelegate）会根据模块名在 AppRegistry 中寻找对应的根组件并执行挂载渲染。",
+    how: `在 <code>index.js</code> 中写入：
+<code>import {AppRegistry} from 'react-native';
+import App from './App';
+import {name as appName} from './app.json';
+
+AppRegistry.registerComponent(appName, () => App);</code>`
+  },
+  {
+    id: "watchman",
+    cat: "rn",
+    catName: "RN 核心",
+    badgeClass: "badge-rn",
+    name: "Watchman",
+    sub: "文件监控守护进程",
+    file: ".watchmanconfig",
+    what: "Meta 开源的<b>高性能文件变动监测服务 (File Watching Service)</b>。",
+    why: "在后台监控项目目录中文件的增删改。相比传统的轮询扫描，Watchman 能够在毫秒级内将改动通知发送给 Metro 打包器，实现近乎实时的热更新 (Hot Reload)。",
+    how: `开发机系统全局安装：
+macOS: <code>brew install watchman</code>
+Windows: <code>choco install watchman</code>
+如遇 Metro 缓存错乱无法更新时，可清空 Watchman 缓存：
+<code>watchman watch-del-all</code>`
+  },
+  {
+    id: "new-arch",
+    cat: "rn",
+    catName: "RN 核心",
+    badgeClass: "badge-rn",
+    name: "New Architecture (新架构)",
+    sub: "Fabric & TurboModules",
+    file: "android/gradle.properties",
+    what: "React Native 的现代化原生架构，核心包含 <b>Fabric (新渲染引擎)</b>、<b>TurboModules (新原生模块)</b> 和 <b>Codegen (代码生成器)</b>。",
+    why: "彻底废弃了过去异步、序列化开销严重的 JSON Bridge (桥)，改为基于 C++ 的 JSI (JavaScript Interface)，使 JS 能直接同步调用原生方法，显著提升高频手势、动画与列表渲染性能。",
+    how: `在 <code>android/gradle.properties</code> 中通过配置开关：
+<code>newArchEnabled=true</code>
+在 iOS 中通过 Podfile 安装参数启用；通过 TypeScript 定义类型规范 (Spec)，Codegen 会自动编译生成双端 C++ 绑定接口。`
+  },
+
+  // --- 2. 前端 / 工程化 ---
+  {
+    id: "typescript",
+    cat: "fe",
+    catName: "前端/工程化",
+    badgeClass: "badge-fe",
+    name: "TypeScript",
+    sub: "静态类型编程语言",
+    file: "tsconfig.json / *.tsx",
+    what: "微软开源的 <b>JavaScript 强类型超集语言</b>，RN 官方模板默认标配。",
+    why: "在编码阶段提供静态类型检查、智能补全与重构支持，杜绝移动端开发中常见的 <code>Cannot read property of undefined</code> 运行时白屏崩溃。",
+    how: `在 <code>tsconfig.json</code> 声明配置：
+<code>{ "extends": "@react-native/typescript-config/tsconfig.json" }</code>
+仅做静态类型检查而不产出文件：
+<code>npx tsc --noEmit</code>`
+  },
+  {
+    id: "babel",
+    cat: "fe",
+    catName: "前端/工程化",
+    badgeClass: "badge-fe",
+    name: "Babel",
+    sub: "JS 语法编译器",
+    file: "babel.config.js",
+    what: "JavaScript/TypeScript 的<b>代码转译器 (Transpiler)</b>。",
+    why: "将最新的 ES2024+ 语法、JSX 语法和 TS 类型标记转译成移动端 JavaScript 引擎 (Hermes / JSC) 可以原生执行的标准 ECMAScript 代码。",
+    how: `在 <code>babel.config.js</code> 中配置官方预设插件：
+<code>module.exports = {
+  presets: ['module:@react-native/babel-preset'],
+  // 引入动画或路由插件时在此追加：
+  // plugins: ['react-native-reanimated/plugin'],
+};</code>`
+  },
+  {
+    id: "eslint",
+    cat: "fe",
+    catName: "前端/工程化",
+    badgeClass: "badge-fe",
+    name: "ESLint",
+    sub: "代码静态检查",
+    file: ".eslintrc.js",
+    what: "可组装的 <b>JavaScript / TypeScript 代码质量与语法规则检查工具</b>。",
+    why: "在提交代码前扫描未定义变量、未遵循的 React Hooks 依赖规范 (rules-of-hooks) 以及潜在逻辑隐患，保证代码稳健性。",
+    how: `执行代码规范扫描命令：
+<code>npm run lint</code> (底层即 <code>eslint .</code>)
+自动修复可修正的格式与规则错误：
+<code>npx eslint . --fix</code>`
+  },
+  {
+    id: "prettier",
+    cat: "fe",
+    catName: "前端/工程化",
+    badgeClass: "badge-fe",
+    name: "Prettier",
+    sub: "代码格式化工具",
+    file: ".prettierrc.js",
+    what: "统一团队书写风格的<b>强约束性代码格式化器 (Code Formatter)</b>。",
+    why: "强制统一缩进字符（如2个空格）、单双引号、每行字符数折行、结尾分号、尾逗号等风格，彻底消除团队 Review 中无意义的风格争端。",
+    how: `在 <code>.prettierrc.js</code> 中配置规则：
+<code>module.exports = {
+  arrowParens: 'avoid',
+  singleQuote: true,
+  trailingComma: 'all',
+};</code>
+配合 VSCode 安装 Prettier 插件并开启 "Editor: Format On Save"。`
+  },
+  {
+    id: "jest",
+    cat: "fe",
+    catName: "前端/工程化",
+    badgeClass: "badge-fe",
+    name: "Jest",
+    sub: "自动化测试框架",
+    file: "jest.config.js / __tests__/",
+    what: "Meta 开源的流行 <b>JavaScript 单元与集成测试框架</b>。",
+    why: "对业务纯函数、自定义 Hook 以及 React Native 组件进行自动化快照测试 (Snapshot) 和交互逻辑验证，保障重构质量。",
+    how: `执行全部测试用例：
+<code>npm test</code>
+在 <code>__tests__/App.test.tsx</code> 中书写断言：
+<code>import React from 'react';
+import ReactTestRenderer from 'react-test-renderer';
+import App from '../App';
+
+test('renders correctly', () => {
+  ReactTestRenderer.act(() => {
+    ReactTestRenderer.create(&lt;App /&gt;);
+  });
+});</code>`
+  },
+  {
+    id: "app-json",
+    cat: "fe",
+    catName: "前端/工程化",
+    badgeClass: "badge-fe",
+    name: "app.json",
+    sub: "全局应用元数据",
+    file: "app.json",
+    what: "React Native 应用的<b>全局通用配置文件</b>。",
+    why: "定义原生工程（Android/iOS）在初始化、打包和注册组件时共享的常量名称（如工程名 <code>name</code>）和桌面端显示的品牌名（<code>displayName</code>）。",
+    how: `修改 App 名字：
+<code>{
+  "name": "RN_Cli_Demo",
+  "displayName": "我的应用商城"
+}</code>`
+  },
+
+  // --- 3. Android 原生 ---
+  {
+    id: "gradle",
+    cat: "android",
+    catName: "Android 原生",
+    badgeClass: "badge-android",
+    name: "Gradle & Wrapper",
+    sub: "Android 构建系统",
+    file: "android/build.gradle, gradlew",
+    what: "Android 官方主导的<b>跨平台自动化构建与依赖管理工具系统</b>，Wrapper 是免安装本地运行时脚本。",
+    why: "拉取 Maven 仓库依赖、编译 Java/Kotlin 与 C++ 源码、合并清单文件与静态资源，最终输出 APK (安装包) 或 AAB (Google Play 上架包)。",
+    how: `在 <code>android/</code> 目录下使用自带脚本：
+<code>./gradlew assembleDebug</code>    # 编译 Debug APK
+<code>./gradlew assembleRelease</code>  # 编译正式 Release APK
+<code>./gradlew clean</code>            # 清除原生缓存与历史构建产物`
+  },
+  {
+    id: "android-manifest",
+    cat: "android",
+    catName: "Android 原生",
+    badgeClass: "badge-android",
+    name: "AndroidManifest.xml",
+    sub: "Android 核心清单文件",
+    file: "android/app/src/main/AndroidManifest.xml",
+    what: "Android 应用的<b>最高级别元数据与系统声明清单文件</b>。",
+    why: "向手机系统声明 App 所需的系统权限（网络、相机、定位、蓝牙、相册）、声明 Activity / Service 组件以及深层链接 (Deep Link / Scheme) 入口。",
+    how: `声明应用需要网络权限与相机权限：
+<code>&lt;manifest xmlns:android="..."&gt;
+    &lt;uses-permission android:name="android.permission.INTERNET" /&gt;
+    &lt;uses-permission android:name="android.permission.CAMERA" /&gt;
+    &lt;application ...&gt;
+        &lt;activity android:name=".MainActivity" ... /&gt;
+    &lt;/application&gt;
+&lt;/manifest&gt;</code>`
+  },
+  {
+    id: "kotlin",
+    cat: "android",
+    catName: "Android 原生",
+    badgeClass: "badge-android",
+    name: "Kotlin",
+    sub: "MainActivity / MainApplication",
+    file: "android/app/src/main/java/**/*.kt",
+    what: "JetBrains 出品的现代化静态语言，Google 官方钦定的 <b>Android 第一开发语言</b>。",
+    why: "编写 RN 在 Android 端的原生宿主代码：<code>MainApplication.kt</code> 用于初始化 RN 运行时；<code>MainActivity.kt</code> 作为页面载体承载视图；编写高性能原生自定义插件。",
+    how: `在 <code>MainApplication.kt</code> 中：
+重写 <code>ReactNativeHost</code>、配置是否开启新架构、向 <code>getPackages()</code> 中手动注入未能自动链接的原生插件。`
+  },
+  {
+    id: "keystore",
+    cat: "android",
+    catName: "Android 原生",
+    badgeClass: "badge-android",
+    name: "Keystore (密钥库)",
+    sub: "debug.keystore / release",
+    file: "android/app/debug.keystore",
+    what: "存储数字签名证书与私钥的<b>安全密钥存储文件</b>。",
+    why: "Android 系统强制要求所有 APK 必须经过数字证书签名才可安装到手机。<code>debug.keystore</code> 是开发阶段免密自动签名的默认钥匙；正式上线需生成专属 Release Keystore。",
+    how: `使用 JDK 工具生成正式发布密钥：
+<code>keytool -genkey -v -keystore my-release-key.keystore -alias my-key-alias -keyalg RSA -keysize 2048 -validity 10000</code>
+在 <code>android/app/build.gradle</code> 的 <code>signingConfigs</code> 中配置引入。`
+  },
+  {
+    id: "proguard",
+    cat: "android",
+    catName: "Android 原生",
+    badgeClass: "badge-android",
+    name: "ProGuard / R8",
+    sub: "代码混淆与优化",
+    file: "android/app/proguard-rules.pro",
+    what: "Android 原生<b>代码压缩、死代码剥离与混淆工具</b>。",
+    why: "在 Release 打包时把类名、变量名重命名为无规律字符（如 a, b, c），防止反编译破解，并移除未引用的冗余方法，大幅缩减 APK 安装包体积。",
+    how: `在 <code>android/app/build.gradle</code> 中开启：
+<code>def enableProguardInReleaseBuilds = true</code>
+若某个第三方库因混淆找不到类报错，在 <code>proguard-rules.pro</code> 追加：
+<code>-keep class com.mycustomlib.** { *; }</code>`
+  },
+
+  // --- 4. iOS 原生 ---
+  {
+    id: "cocoapods",
+    cat: "ios",
+    catName: "iOS 原生",
+    badgeClass: "badge-ios",
+    name: "CocoaPods & Podfile",
+    sub: "iOS 原生依赖管理",
+    file: "ios/Podfile",
+    what: "iOS/macOS 开发中事实标准的<b>第三方 Objective-C / Swift 依赖库包管理器</b>。",
+    why: "在 iOS 平台下载、管理并配置 React Native 核心 C++/Swift 运行时代码，以及社区各类原生扩展插件（如摄像头、地图、蓝牙）。",
+    how: `每当通过 npm 安装了带原生代码的库，进入 <code>ios/</code> 执行同步：
+<code>cd ios
+pod install
+cd ..</code>
+安装完成后会在 iOS 目录下生成 <code>.xcworkspace</code> 联合工程文件。`
+  },
+  {
+    id: "ruby-gemfile",
+    cat: "ios",
+    catName: "iOS 原生",
+    badgeClass: "badge-ios",
+    name: "Ruby, Gemfile & Bundler",
+    sub: "Ruby 环境锁定",
+    file: "Gemfile / .bundle",
+    what: "CocoaPods 本身使用 Ruby 开发，<b>Gemfile 与 Bundler 是 Ruby 世界的包管理工具</b>（作用等同于 package.json）。",
+    why: "防止团队不同成员因电脑上全局安装的 CocoaPods 版本差异导致原生配置解析冲突、Podfile.lock 冲突或编译崩溃。",
+    how: `首次拉取项目后推荐：
+<code>bundle install</code>                  # 安装 Gemfile 锁定的 CocoaPods
+<code>bundle exec pod install</code>        # 用锁定的确切版本执行原生 Pod 安装`
+  },
+  {
+    id: "xcode",
+    cat: "ios",
+    catName: "iOS 原生",
+    badgeClass: "badge-ios",
+    name: "Xcode & .xcworkspace",
+    sub: "苹果集成开发环境",
+    file: "ios/RN_Cli_Demo.xcodeproj",
+    what: "苹果官方唯一的 <b>iOS / iPadOS 应用集成开发环境 (IDE)</b>。",
+    why: "调试原生 Swift 代码、配置苹果开发者证书与描述文件 (Provisioning Profile)、真机调试性能分析 (Instruments) 及向 App Store 提审上传归档 (Archive)。",
+    how: `<b>重要规则：</b>使用 CocoaPods 依赖后，必须打开生成的 <code>.xcworkspace</code> 文件，千万不能打开单体 <code>.xcodeproj</code>：
+<code>open ios/RN_Cli_Demo.xcworkspace</code>`
+  },
+  {
+    id: "swift",
+    cat: "ios",
+    catName: "iOS 原生",
+    badgeClass: "badge-ios",
+    name: "Swift",
+    sub: "AppDelegate.swift",
+    file: "ios/RN_Cli_Demo/**/*.swift",
+    what: "苹果推出的现代、安全、高性能的<b>原生主力编程语言</b>（新版 RN 模板已全面取代旧版 Objective-C）。",
+    why: "掌控 iOS 应用启动生命周期、创建并挂载 <code>RCTBridge</code> / <code>RCTHost</code> (RN 渲染宿主窗口)，并提供与 iOS 操作系统底层 API 交互的能力。",
+    how: `在 <code>AppDelegate.swift</code> 中指定本地 Metro 服务器地址或离线编译产物：
+<code>func sourceURL(for bridge: RCTBridge!) -> URL! {
+  return bundleURL()
+}</code>`
+  },
+  {
+    id: "info-plist",
+    cat: "ios",
+    catName: "iOS 原生",
+    badgeClass: "badge-ios",
+    name: "Info.plist",
+    sub: "iOS 属性列表清单",
+    file: "ios/RN_Cli_Demo/Info.plist",
+    what: "iOS 应用的<b>核心属性与隐私权限配置清单 (Property List)</b>。",
+    why: "配置 Bundle ID、应用版本、方向支持，以及极其重要的<b>系统隐私权限弹窗文字说明</b>（例如相机、定位、麦克风权限的申请理由）。",
+    how: `调用敏感硬件功能必须在 <code>Info.plist</code> 中配置说明，否则 iOS 运行时会直接闪退：
+<code>&lt;key&gt;NSCameraUsageDescription&lt;/key&gt;
+&lt;string&gt;我们需要使用您的相机来扫描二维码&lt;/string&gt;
+&lt;key&gt;NSPhotoLibraryUsageDescription&lt;/key&gt;
+&lt;string&gt;我们需要访问您的相册以选择上传头像&lt;/string&gt;</code>`
+  },
+  {
+    id: "launchscreen",
+    cat: "ios",
+    catName: "iOS 原生",
+    badgeClass: "badge-ios",
+    name: "LaunchScreen.storyboard",
+    sub: "iOS 原生开屏故事板",
+    file: "ios/RN_Cli_Demo/LaunchScreen.storyboard",
+    what: "iOS 原生可视化的<b>冷启动静态闪屏文件 (Storyboard)</b>。",
+    why: "在 App 冷启动、JavaScript 引擎尚未初始化且 Bundle 尚未执行渲染之前，由 iOS 系统直接渲染的白屏占位/品牌画面，防止启动时出现黑屏或生硬闪烁。",
+    how: `在 macOS 上双击使用 Xcode 的可视化画布打开，直接拖拽控件更改启动页背景色、Logo 居中图片或版权标语文案。`
+  },
+  {
+    id: "privacy-manifest",
+    cat: "ios",
+    catName: "iOS 原生",
+    badgeClass: "badge-ios",
+    name: "PrivacyInfo.xcprivacy",
+    sub: "苹果隐私清单",
+    file: "ios/RN_Cli_Demo/PrivacyInfo.xcprivacy",
+    what: "苹果自 2024 年强制推行的<b>应用与 SDK 隐私政策声明清单</b>。",
+    why: "合规审查。如果 App 或引入的第三方库调用了系统敏感 API（如文件时间戳、启动时间、用户默认偏好等）必须声明合规理由，未正确配置将被 App Store 拒审。",
+    how: `在 Xcode 中直接以属性表打开，在 <code>NSPrivacyAccessedAPITypes</code> 下添加对应的 API 类型代码与理由分类代码。`
+  },
+
+  // --- 5. 核心生态库 ---
+  {
+    id: "safe-area",
+    cat: "lib",
+    catName: "核心生态库",
+    badgeClass: "badge-lib",
+    name: "react-native-safe-area-context",
+    sub: "屏幕安全区域适配",
+    file: "App.tsx / dependencies",
+    what: "处理现代手机<b>刘海屏 (Notch)、灵动岛、底部横条 (Home Bar)</b> 的工业级原生适配库。",
+    why: "提供设备屏幕各边缘安全内边距（Safe Area Insets）的精准原生数据，防止按钮被刘海遮挡或贴底被手势横条误触。",
+    how: `在根组件包裹 Provider，在子组件获取安全边距：
+<code>import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
+
+function MyScreen() {
+  const insets = useSafeAreaInsets();
+  return &lt;View style={{ paddingTop: insets.top, paddingBottom: insets.bottom }} /&gt;;
+}</code>`
+  },
+  {
+    id: "react-navigation",
+    cat: "lib",
+    catName: "核心生态库",
+    badgeClass: "badge-lib",
+    name: "React Navigation & Screens",
+    sub: "@react-navigation/native",
+    file: "dependencies",
+    what: "React Native 生态中最主流的<b>多页面路由导航系统</b>，底层由 <code>react-native-screens</code> 原生优化支持。",
+    why: "提供栈导航 (Stack Navigation)、标签栏导航 (Bottom Tabs)、抽屉导航 (Drawer)，并使用原生系统层级的视图控制器管理内存和滑动返回手势。",
+    how: `安装：
+<code>npm install @react-navigation/native react-native-screens</code>
+iOS 端需同步：<code>cd ios && pod install && cd ..</code>
+代码中使用 <code>NavigationContainer</code> 与 <code>createNativeStackNavigator</code>。`
+  },
+  {
+    id: "async-storage",
+    cat: "lib",
+    catName: "核心生态库",
+    badgeClass: "badge-lib",
+    name: "AsyncStorage",
+    sub: "@react-native-async-storage/async-storage",
+    file: "dependencies",
+    what: "React Native 的<b>异步键值对持久化本地存储库</b>（相当于移动端的 LocalStorage）。",
+    why: "将用户登录 Token、系统设置（暗黑模式、语言）、离线缓存等轻量数据安全保存在手机内部沙盒存储中，应用关闭重启后依然保留。",
+    how: `<code>import AsyncStorage from '@react-native-async-storage/async-storage';
+
+// 存入数据
+await AsyncStorage.setItem('userToken', 'abc_123');
+// 取出数据
+const token = await AsyncStorage.getItem('userToken');
+// 移除数据
+await AsyncStorage.removeItem('userToken');</code>`
+  },
+  {
+    id: "vector-icons",
+    cat: "lib",
+    catName: "核心生态库",
+    badgeClass: "badge-lib",
+    name: "react-native-vector-icons",
+    sub: "移动端矢量图标库",
+    file: "dependencies",
+    what: "集成多种常用开源矢量图标集（FontAwesome, MaterialIcons, Ionicons）的<b>跨平台图标组件</b>。",
+    why: "矢量渲染无失真、体积小、支持任意调整色彩与尺寸，是移动端界面制作按钮、底栏标签的核心基础库。",
+    how: `<code>npm install react-native-vector-icons
+npm install -D @types/react-native-vector-icons</code>
+在组件中使用：
+<code>import Icon from 'react-native-vector-icons/Ionicons';
+&lt;Icon name="settings-outline" size={24} color="#007AFF" /&gt;</code>`
+  },
+  {
+    id: "axios",
+    cat: "lib",
+    catName: "核心生态库",
+    badgeClass: "badge-lib",
+    name: "Axios",
+    sub: "HTTP 客户端网络请求库",
+    file: "dependencies",
+    what: "基于 Promise 的<b>跨平台 HTTP 异步请求库</b>（通用支持 Node.js、浏览器和 React Native）。",
+    why: "相比原生 <code>fetch</code>，Axios 提供请求/响应拦截器 (Interceptors)、自动转换 JSON 数据、统一的 Token 注入和全流程错误异常捕获机制。",
+    how: `<code>import axios from 'axios';
+
+const api = axios.create({ baseURL: 'https://api.example.com', timeout: 8000 });
+// 添加拦截器注入 Token
+api.interceptors.request.use(config => {
+  config.headers.Authorization = 'Bearer ...';
+  return config;
+});
+const response = await api.get('/users/profile');</code>`
+  }
+];
+
+// 渲染表格与卡片
+function renderContent(data) {
+  const tableBody = document.getElementById('summaryTableBody');
+  const cardsGrid = document.getElementById('cardsGrid');
+
+  tableBody.innerHTML = '';
+  cardsGrid.innerHTML = '';
+
+  if (data.length === 0) {
+    tableBody.innerHTML = '<tr><td colspan="6" style="text-align:center; padding: 32px; color: #94a3b8;">没有找到匹配的工具或词汇</td></tr>';
+    cardsGrid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding: 48px; color: #94a3b8;">没有找到匹配的工具或词汇</div>';
+    return;
+  }
+
+  data.forEach((item, index) => {
+    // 1. 渲染表格行
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><span class="badge ${item.badgeClass}">${item.catName}</span></td>
+      <td><a href="#card-${item.id}" class="tool-link">${item.name}</a><br><small style="color:var(--text-muted)">${item.sub}</small></td>
+      <td><code>${item.file}</code></td>
+      <td>${item.what}</td>
+      <td>${item.why}</td>
+      <td><small>${item.how.split('\n')[0]}</small></td>
+    `;
+    tableBody.appendChild(tr);
+
+    // 2. 渲染卡片
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.id = `card-${item.id}`;
+    card.innerHTML = `
+      <div class="card-header">
+        <div>
+          <div class="card-title">${item.name}</div>
+          <div class="card-sub">${item.sub} · <code>${item.file}</code></div>
+        </div>
+        <span class="badge ${item.badgeClass}">${item.catName}</span>
+      </div>
+
+      <div class="field-block">
+        <div class="field-label">📌 是什么 (What is it?)</div>
+        <div class="field-content">${item.what}</div>
+      </div>
+
+      <div class="field-block">
+        <div class="field-label">🎯 用于什么 (What is it used for?)</div>
+        <div class="field-content">${item.why}</div>
+      </div>
+
+      <div class="field-block" style="margin-bottom: 0;">
+        <div class="field-label">💻 怎么用 (How to use it?)</div>
+        <pre><code>${item.how}</code></pre>
+      </div>
+    `;
+    cardsGrid.appendChild(card);
+  });
+}
+
+// 分类与搜索过滤
+let currentCategory = 'all';
+
+function filterCategory(cat, btn) {
+  currentCategory = cat;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  handleFilter();
+}
+
+function handleFilter() {
+  const keyword = document.getElementById('searchInput').value.trim().toLowerCase();
+
+  const filtered = toolsData.filter(item => {
+    const matchCat = currentCategory === 'all' || item.cat === currentCategory;
+    const matchKeyword = !keyword || (
+      item.name.toLowerCase().includes(keyword) ||
+      item.sub.toLowerCase().includes(keyword) ||
+      item.file.toLowerCase().includes(keyword) ||
+      item.what.toLowerCase().includes(keyword) ||
+      item.why.toLowerCase().includes(keyword) ||
+      item.how.toLowerCase().includes(keyword)
+    );
+    return matchCat && matchKeyword;
+  });
+
+  renderContent(filtered);
+}
+
+// 首次加载全量数据
+renderContent(toolsData);
+</script>
+
+</body>
+</html>

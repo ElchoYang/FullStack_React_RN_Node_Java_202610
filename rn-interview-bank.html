@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>RN 面试速成题库 · Vue / Web 转 RN</title>
+<style>
+  :root{
+    --bg:#f7f8fa; --card:#ffffff; --text:#1f2329; --muted:#6b7280;
+    --border:#e4e7ec; --accent:#2563eb; --accent-bg:#eff6ff;
+    --green:#15803d; --green-bg:#f0fdf4; --amber:#b45309; --amber-bg:#fffbeb;
+    --purple:#7c3aed; --purple-bg:#f5f3ff;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--text);
+    font-family:system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+    font-size:15px;line-height:1.75}
+  .wrap{max-width:1000px;margin:0 auto;padding:28px 20px 80px}
+  header{background:var(--card);border:1px solid var(--border);border-left:4px solid var(--accent);
+    border-radius:12px;padding:22px 26px;margin-bottom:18px}
+  h1{margin:0 0 6px;font-size:25px;letter-spacing:.3px}
+  .sub{color:var(--muted);font-size:14px;margin:0}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .chip{background:var(--accent-bg);color:var(--accent);border:1px solid #dbeafe;
+    border-radius:999px;padding:3px 11px;font-size:12.5px;font-weight:600}
+  .chip.g{background:var(--green-bg);color:var(--green);border-color:#bbf7d0}
+  .chip.a{background:var(--amber-bg);color:var(--amber);border-color:#fde68a}
+  nav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 18px}
+  nav a{color:var(--accent);text-decoration:none;font-size:13px;background:var(--card);
+    border:1px solid var(--border);padding:5px 11px;border-radius:7px}
+  nav a:hover{background:var(--accent-bg)}
+  section{background:var(--card);border:1px solid var(--border);border-radius:12px;
+    padding:20px 24px;margin-bottom:18px}
+  h2{margin:0 0 4px;font-size:19px;border-bottom:2px solid var(--accent-bg);padding-bottom:9px}
+  h2 .en{font-size:12px;color:var(--muted);font-weight:400;margin-left:8px}
+  .note{color:var(--muted);font-size:13.5px;margin:10px 0 16px}
+  table{width:100%;border-collapse:collapse;font-size:13.5px;margin:12px 0}
+  th,td{border:1px solid var(--border);padding:8px 10px;text-align:left;vertical-align:top}
+  th{background:#f3f6fb;font-weight:600;color:#334155}
+  tr:nth-child(even) td{background:#fbfcfe}
+  code{background:#f1f5f9;border-radius:4px;padding:1px 5px;font-size:12.5px;
+    font-family:ui-monospace,Consolas,monospace;color:#0f172a}
+  .toolbar{position:sticky;top:0;z-index:20;background:var(--card);
+    border:1px solid var(--border);border-radius:10px;padding:11px 13px;margin-bottom:16px;
+    display:flex;flex-wrap:wrap;gap:9px;align-items:center;
+    box-shadow:0 2px 10px rgba(15,23,42,.05)}
+  .toolbar input,.toolbar select,.toolbar button{font:inherit;font-size:13px;color:var(--text);
+    background:#fff;border:1px solid var(--border);border-radius:7px;padding:6px 10px}
+  .toolbar input{flex:1;min-width:190px}
+  .toolbar button{cursor:pointer;background:var(--accent-bg);color:var(--accent);border-color:#dbeafe;font-weight:600}
+  .toolbar button:hover{background:#dbeafe}
+  .toolbar .spacer{flex:1}
+  .counter{font-size:12.5px;color:var(--muted)}
+  .q{border:1px solid var(--border);border-radius:10px;margin:11px 0;overflow:hidden;background:#fff}
+  .q summary{cursor:pointer;padding:12px 15px;font-weight:600;list-style:none;display:flex;gap:9px;align-items:flex-start}
+  .q summary::-webkit-details-marker{display:none}
+  .q summary:hover{background:#f8faff}
+  .qid{color:var(--accent);font-weight:700;flex:0 0 auto;font-size:13px;min-width:30px}
+  .tag{font-size:11px;font-weight:600;border-radius:5px;padding:1px 7px;margin-left:auto;
+    background:var(--accent-bg);color:var(--accent);white-space:nowrap;flex:0 0 auto}
+  .tag.m{background:var(--purple-bg);color:var(--purple)}
+  .qbody{border-top:1px dashed var(--border);padding:12px 16px 15px}
+  .qbody ul{margin:0 0 11px;padding-left:20px}
+  .qbody li{margin:5px 0}
+  .vue{background:var(--green-bg);border-left:3px solid var(--green);border-radius:0 6px 6px 0;
+    padding:8px 12px;font-size:13.5px;margin:9px 0}
+  .follow{background:var(--amber-bg);border-left:3px solid var(--amber);border-radius:0 6px 6px 0;
+    padding:8px 12px;font-size:13.5px;margin:9px 0}
+  .lbl{font-weight:700;margin-right:4px}
+  .hide{display:none !important}
+  .empty{color:var(--muted);padding:22px;text-align:center;font-size:14px}
+  .quote{background:#f8fafc;border-left:3px solid var(--accent);padding:13px 16px;
+    border-radius:0 7px 7px 0;font-size:14px;margin:10px 0}
+  .two{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+  .box{background:#fbfcfe;border:1px solid var(--border);border-radius:9px;padding:13px 15px}
+  .box h3{margin:0 0 8px;font-size:15px}
+  .box ol,.box ul{margin:0;padding-left:20px;font-size:13.5px}
+  .box li{margin:5px 0}
+  .done{background:var(--green-bg);color:var(--green);border:1px solid #bbf7d0;
+    border-radius:7px;padding:6px 11px;font-size:13px;font-weight:600}
+  label.ck{display:flex;gap:8px;align-items:center;font-size:13px}
+  footer{text-align:center;color:var(--muted);font-size:12.5px;padding:10px}
+  @media (max-width:720px){.two{grid-template-columns:1fr}.wrap{padding:16px 12px 60px}
+    section{padding:16px}table{font-size:12.5px}th,td{padding:6px}}
+  @media print{
+    body{background:#fff}.toolbar,nav,footer,.tag{display:none !important}
+    section{break-inside:auto;border:1px solid #ddd;box-shadow:none;margin-bottom:12px}
+    .q{break-inside:avoid}header{border-left:4px solid #2563eb}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header>
+  <h1>React Native 面试速成题库</h1>
+  <p class="sub">Vue / Web 转 RN · 零 RN 项目经验适用 · 初中级岗位 · 含 Node.js 高频题</p>
+  <div class="chips">
+    <span class="chip">25 道必背题（折叠答案）</span>
+    <span class="chip">38 题查漏清单</span>
+    <span class="chip g">21 条 Vue→RN 迁移对照</span>
+    <span class="chip a">10 个高频坑</span>
+    <span class="chip">2026-11-09</span>
+  </div>
+</header>
+
+<nav>
+  <a href="#how">冲刺动线</a><a href="#map">迁移对照表</a><a href="#core">必背 25 题</a>
+  <a href="#pit">十大坑</a><a href="#check">查漏清单</a><a href="#talk">没项目怎么答</a>
+  <a href="#node">Node 速记</a><a href="#score">评分表</a>
+</nav>
+
+<div class="toolbar">
+  <input id="search" type="search" placeholder="搜索题目 / 关键词，如 flex、权限、JWT、FlashList…">
+  <select id="mod"><option value="">全部模块</option><option>A 基础与渲染</option><option>B 样式与布局</option>
+    <option>C 列表与导航</option><option>D 状态与网络</option><option>E 原生与工程化</option>
+    <option>F 性能与新架构</option><option>G Node.js</option><option>H 行为/项目题</option></select>
+  <button id="expand">展开全部答案</button>
+  <button id="collapse">收起</button>
+  <button id="print">打印 / 存 PDF</button>
+  <span class="spacer"></span>
+  <span class="counter" id="counter"></span>
+</div>
+
+<section id="how">
+  <h2>0 · 时间紧怎么用 <span class="en">2 小时冲刺动线</span></h2>
+  <table><tr><th>时长</th><th>做什么</th><th>达标线</th></tr>
+    <tr><td>20 min</td><td>第 1 节 迁移对照表</td><td>把 Vue 概念对上 RN 名词，先「听懂题」</td></tr>
+    <tr><td>45 min</td><td>第 2 节 25 道必背题（遮住答案）</td><td>每题讲出 3 个准确要点</td></tr>
+    <tr><td>15 min</td><td>第 3 节 10 个高频坑</td><td>能说「为什么错」而不只是「不一样」</td></tr>
+    <tr><td>20 min</td><td>第 4 节 38 题查漏清单</td><td>只看题目，讲不出的打标回头查</td></tr>
+    <tr><td>15 min</td><td>第 5、6 节 话术 + Node 速记</td><td>把「没做过项目」讲成加分项</td></tr>
+    <tr><td>5 min</td><td>第 7 节 自测评分</td><td>锁定 2 个补强模块</td></tr></table>
+  <p class="note"><b>自测判定：</b>不看答案能讲出 3 个准确要点 = 3 分（过）；只会名词 = 1 分；完全讲不出 = 0 分；能讲底层原因 + 平台差异 + 方案权衡 = 4 分。</p>
+  <div class="quote"><b>只剩 30 分钟？</b> 只做：① 迁移对照表 ② H1/H2/H3 三段话术 ③ 十大坑 ④ B1、C1、E3 三题。这四块覆盖新手面试约 80% 的区分度。</div>
+</section>
+
+<section id="map">
+  <h2>1 · Vue / Web → RN 迁移对照表 <span class="en">先背这张</span></h2>
+  <table><tr><th style="width:27%">Vue / Web</th><th style="width:27%">RN / Expo</th><th>关键差异（面试最爱问）</th></tr>
+    <tr><td><code>template</code> + <code>v-if</code>/<code>v-for</code></td><td>JSX + 条件表达式 / <code>.map()</code></td><td>没有指令，全是 JS 表达式</td></tr>
+    <tr><td><code>ref</code>/<code>reactive</code> 响应式</td><td><code>useState</code> + 不可变更新</td><td>不侦测对象内部修改，必须返回新引用</td></tr>
+    <tr><td><code>watch</code>/<code>onMounted</code>/<code>onUnmounted</code></td><td><code>useEffect(fn, deps)</code></td><td>依赖数组决定时机，return 做清理</td></tr>
+    <tr><td><code>computed</code></td><td><code>useMemo</code>/<code>useCallback</code></td><td>缓存值与函数引用，减少重渲染</td></tr>
+    <tr><td>CSS / <code>&lt;style scoped&gt;</code></td><td><code>StyleSheet.create</code> + <code>style</code></td><td>无级联、无继承、无单位数字、无伪类</td></tr>
+    <tr><td><code>div</code>/<code>span</code>/<code>p</code></td><td><code>View</code>/<code>Text</code></td><td>文字必须包 <code>Text</code>，否则直接报错</td></tr>
+    <tr><td><code>img</code></td><td><code>Image</code>/<code>expo-image</code></td><td>必须给宽高（尤其远程图）否则不渲染</td></tr>
+    <tr><td><code>overflow:scroll</code></td><td><code>ScrollView</code></td><td>一次性渲染全部子项，长列表禁用</td></tr>
+    <tr><td><code>v-for</code> + 虚拟滚动库</td><td><code>FlatList</code>/<code>FlashList</code></td><td>20 条以上优先 FlashList</td></tr>
+    <tr><td><code>@click</code></td><td><code>onPress</code>（<code>Pressable</code>）</td><td>没有 <code>onClick</code>，没有 DOM 冒泡体系</td></tr>
+    <tr><td>vue-router / Nuxt <code>pages/</code></td><td>Expo Router 的 <code>app/</code></td><td>文件路由几乎同构：<code>[id].tsx</code> ≈ <code>[id].vue</code></td></tr>
+    <tr><td><code>router.push</code>/<code>route.params</code></td><td><code>router.push</code>/<code>useLocalSearchParams()</code></td><td>参数是 URL 的一部分，支持深链接</td></tr>
+    <tr><td>Pinia / Vuex</td><td>Zustand / Jotai</td><td>管<strong>客户端状态</strong></td></tr>
+    <tr><td>VueQuery / SWR</td><td>TanStack Query</td><td>管<strong>服务端状态</strong>：缓存、重取、乐观更新</td></tr>
+    <tr><td><code>localStorage</code></td><td><code>AsyncStorage</code></td><td><strong>异步</strong>、明文、不适合敏感数据</td></tr>
+    <tr><td>—</td><td><code>expo-secure-store</code></td><td>Keychain / Keystore，用来存 token</td></tr>
+    <tr><td>Vite / Webpack</td><td>Metro</td><td>Fast Refresh ≈ HMR</td></tr>
+    <tr><td>Chrome V8</td><td>Hermes</td><td>RN 默认 JS 引擎，优化移动端启动</td></tr>
+    <tr><td><code>npm run dev</code> + 浏览器</td><td><code>npx expo start</code> + Expo Go</td><td>跑真机/模拟器，<strong>没有 DOM / window</strong></td></tr>
+    <tr><td>浏览器 CORS</td><td>RN <strong>无 CORS</strong></td><td>但 Android 9+ 禁明文 HTTP，iOS 有 ATS</td></tr>
+    <tr><td>前端构建部署</td><td>EAS Build / Submit / Update</td><td>OTA 只能更 JS 与资源，<strong>不能更原生代码</strong></td></tr>
+    <tr><td><code>.env</code> / <code>import.meta.env</code></td><td><code>EXPO_PUBLIC_*</code></td><td><strong>会打进客户端包</strong>，绝不能放密钥</td></tr>
+  </table>
+</section>
+
+<section id="core">
+  <h2>2 · 必背 25 题 <span class="en">点开答案前先自己讲一遍</span></h2>
+  <p class="note">每题含答案要点、Vue 类比、面试官追问。用顶部搜索框可以按关键词过滤。</p>
+  <div id="qlist"></div>
+  <div id="qempty" class="empty hide">没有匹配的题目，换个关键词试试。</div>
+</section>
+
+<section id="pit">
+  <h2>3 · Vue 转 RN 十大高频坑 <span class="en">要能讲「为什么」</span></h2>
+  <table><tr><th style="width:38px">#</th><th style="width:38%">坑</th><th>一句话原因</th></tr>
+    <tr><td>1</td><td>元素没并排</td><td>RN flexbox 默认 <code>column</code>，Web 默认 <code>row</code></td></tr>
+    <tr><td>2</td><td>裸文字报错</td><td>文本必须包在 <code>&lt;Text&gt;</code> 内，没有 DOM 文本节点</td></tr>
+    <tr><td>3</td><td>图片不显示</td><td><code>Image</code> 无固有尺寸，远程图必须给宽高</td></tr>
+    <tr><td>4</td><td>父样式不生效</td><td>无级联、无继承（<code>Text</code> 嵌套 <code>Text</code> 是例外）</td></tr>
+    <tr><td>5</td><td><code>setState</code> 后读到旧值</td><td>闭包快照 + 批处理，用函数式更新 / <code>useEffect</code></td></tr>
+    <tr><td>6</td><td>数组改了 UI 不变</td><td>直接改原数组引用没变，必须返回新数组</td></tr>
+    <tr><td>7</td><td><code>useEffect</code> 死循环</td><td>依赖里放了每次新建的对象/数组，或漏依赖</td></tr>
+    <tr><td>8</td><td>长列表卡死</td><td>用 <code>ScrollView</code> 渲染几千条；换 FlashList</td></tr>
+    <tr><td>9</td><td><code>window</code>/<code>localStorage</code> 报错</td><td>RN 不是浏览器，换 <code>useWindowDimensions</code>/AsyncStorage</td></tr>
+    <tr><td>10</td><td>OTA 更新后原生功能没变</td><td>OTA 只更 JS 与资源，原生改动必须重新构建</td></tr>
+  </table>
+</section>
+
+<section id="check">
+  <h2>4 · 查漏清单 38 题 <span class="en">只看题目，讲不出就回头查</span></h2>
+  <p class="note">勾选表示「能独立讲清」，进度会保存在本机浏览器。<span id="progress" class="done">已掌握 0 / 38</span></p>
+  <table><thead><tr><th style="width:44px">✓</th><th style="width:48px">编号</th><th>题目</th><th style="width:34%">关键词提示</th></tr></thead>
+    <tbody id="checklist"></tbody></table>
+  <div id="cempty" class="empty hide">没有匹配的条目。</div>
+</section>
+
+<section id="talk">
+  <h2>5 · 没做过 RN 项目怎么答 <span class="en">优先级最高</span></h2>
+  <div class="quote"><b>H1 可直接背诵：</b><br>「我确实是 RN 新手，没有上线的 RN 项目，这点我不绕。但我有 X 年 Vue / Web 项目经验，做过完整的页面路由、状态管理、接口封装和权限流程。RN 的这些概念和 Vue 是一一对应的：Expo Router 对应 Nuxt 的文件路由，Zustand 对应 Pinia，React Query 对应 VueQuery，Metro/EAS 对应 Vite/构建发布。我已经系统学过 RN，重点补了三块 Web 里没有的东西：原生权限与平台差异、无 DOM/CSS 的样式与布局体系、以及 JS 线程与 UI 线程分离带来的性能模型。我预期上手的主要风险在原生配置和真机调试，所以会先从 Expo 托管工作流切入，遇到原生需求再用 config plugin 处理。如果可以，我愿意现场写一个带列表、详情和表单提交的小 demo 来验证。」<br><br>
+  <b>结构：</b>① 不撒谎不编项目 ② 用对照表把旧经验折算成新能力 ③ 明确说出「我知道自己缺什么」 ④ 给可验证的落地方案</div>
+  <div class="two">
+    <div class="box"><h3>不要说</h3><ul>
+      <li>「我做过 RN 项目」（追问细节会穿帮）</li>
+      <li>「RN 和 Vue 差不多，很容易」</li>
+      <li>「性能应该没问题吧」</li>
+      <li>「遇到问题搜一下就行」</li>
+      <li>编造线上事故 / 性能调优战绩</li></ul></div>
+    <div class="box"><h3>要说</h3><ul>
+      <li>「没有上线项目，但系统学习过并做了迁移与 demo 验证」</li>
+      <li>「状态与路由能迁移；原生边界、双线程、发布方式是我重点补的三块」</li>
+      <li>「掉帧要先定位是 JS 线程还是 UI 线程」</li>
+      <li>「排查顺序：清 Metro 缓存 → 日志/DevTools → 缩小到平台或原生配置 → expo-doctor 查兼容」</li>
+      <li>用「我预判到的坑 + 会在 demo 里验证」体现工程意识</li></ul></div>
+  </div>
+  <p class="note"><b>「你遇到过什么坑」诚实版：</b>「目前没有线上 RN 项目，所以没有真实事故可讲。但学习时我特意整理了 Vue 转 RN 最易错的点：flex 默认方向、文字必须包 Text、Image 必须给尺寸、样式不继承、setState 的闭包快照、长列表不能用 ScrollView，写 demo 时会优先验证。遇到原生配置类问题，我会先看 app.json / config plugin 与平台差异，再用 expo-doctor 查版本兼容。」</p>
+</section>
+
+<section id="node">
+  <h2>6 · Node.js 八条速记 <span class="en">Web 背景可直接迁移</span></h2>
+  <div class="box"><ol>
+    <li><b>分层</b>：router → controller → service → repository，别在路由里写业务。</li>
+    <li><b>校验</b>：Zod/Joi 在边界校验；统一错误响应 <code>{ code, message, traceId }</code>。</li>
+    <li><b>鉴权</b>：access 短 + refresh 长、轮换 + jti 防重放；RBAC 放中间件。</li>
+    <li><b>上传</b>：流式 multipart / 预签名直传；禁 base64；分片 + 幂等 key + 秒传。</li>
+    <li><b>进度</b>：SSE（单向）优先于 WebSocket（双向），轮询最差。</li>
+    <li><b>稳定性</b>：限流 429、超时、重试退避、结构化日志 + traceId、健康检查。</li>
+    <li><b>配置</b>：密钥只在服务端 env / EAS Secrets；<code>EXPO_PUBLIC_*</code> 一律视为公开。</li>
+    <li><b>联调部署</b>：后端绑 <code>0.0.0.0</code>、<code>adb reverse</code> / 局域网 IP、HTTPS；Docker + PM2 + 灰度。</li>
+  </ol></div>
+</section>
+
+<section id="score">
+  <h2>7 · 自测评分表</h2>
+  <table><tr><th>模块</th><th>题数</th><th>得分（0-4/题）</th><th>低于 2 分的题</th><th>补强动作</th></tr>
+    <tr><td>A 基础与渲染</td><td>4 + 6</td><td></td><td></td><td>重看对照表 + 手写 Hooks demo</td></tr>
+    <tr><td>B 样式与布局</td><td>3 + 5</td><td></td><td></td><td>写一个两栏 + 安全区页面</td></tr>
+    <tr><td>C 列表与导航</td><td>3 + 6</td><td></td><td></td><td>写列表→详情→弹层小 demo</td></tr>
+    <tr><td>D 状态与网络</td><td>3 + 4</td><td></td><td></td><td>封一层 fetch client + 401 刷新</td></tr>
+    <tr><td>E 原生与工程化</td><td>3 + 6</td><td></td><td></td><td>跑通 expo prebuild + 权限配置</td></tr>
+    <tr><td>F 性能与新架构</td><td>3 + 5</td><td></td><td></td><td>讲清三个痛点即可，不必深挖源码</td></tr>
+    <tr><td>G Node.js</td><td>3 + 4</td><td></td><td></td><td>画一张上传接口时序图</td></tr>
+    <tr><td>H 行为/项目题</td><td>3 + 2</td><td></td><td></td><td><b>大声背 H1 三遍（优先级最高）</b></td></tr>
+  </table>
+</section>
+
+<footer>React Native 面试速成题库 · 基于 Expo SDK 5x / RN 0.76+ 新架构 · 离线可用，可直接打印</footer>
+</div>
+
+<script>
+const Q = [
+ {id:'A1',mod:'A 基础与渲染',q:'Vue 的响应式和 RN 的 state 最本质区别？为什么 setState 后立刻读还是旧值？',
+  p:['Vue 用 Proxy 追踪依赖，改 obj.a=1 自动更新；RN 是<b>不可变 + 显式 setState</b>，必须返回新引用，靠引用比较决定是否重渲染。','读不到新值：① 本次渲染闭包捕获旧快照；② 更新被<b>批处理</b>，不同步生效。','解法：连续更新用函数式 <code>setCount(c =&gt; c+1)</code>；变更后做副作用放 <code>useEffect(fn,[count])</code>。','衍生坑：<code>state.arr.push()</code> 后再 setState 同一引用不会更新。'],
+  vue:'ref 自动追踪 ≈ Vue 帮你收集依赖；RN 里你得自己「换新对象」并声明依赖。',
+  f:'useState 和 useRef 什么时候互换？→ 需要触发渲染用 state；只存可变值、不要重渲染用 ref。'},
+ {id:'A2',mod:'A 基础与渲染',q:'View / Text / Image / ScrollView 对应 Web 的什么？两个「不写就报错/不显示」的硬规则？',
+  p:['<code>View</code>≈div，<code>Text</code>≈span/p，<code>Image</code>≈img，<code>ScrollView</code>≈可滚动容器。','<b>所有字符串必须包在 &lt;Text&gt; 内</b>，直接写在 View 里会抛错。','<b>Image 必须指定尺寸</b>：远程图没有固有尺寸，不给宽高就不显示；本地 require 资源可推导。','Text 是唯一能嵌套并继承字号/颜色的例外；View 不能响应点击，要用 Pressable 包一层。','没有 DOM：不能 querySelector、不能 className、不能 CSS 动画。'],
+  vue:'模板里随便写文字没问题，RN 里文字是「组件」，这是最反直觉的一条。',
+  f:'Text 里怎么让部分文字变色？→ 嵌套 &lt;Text&gt;，而不是嵌套 &lt;View&gt;。'},
+ {id:'A3',mod:'A 基础与渲染',q:'useEffect 的依赖数组分别对应 Vue 哪些生命周期？写错依赖会怎样？',
+  p:['<code>useEffect(fn,[])</code> ≈ onMounted；return 的函数 ≈ onUnmounted（取消订阅、清定时器）。','<code>useEffect(fn,[a])</code> ≈ watch(a)；<b>不写依赖数组 = 每次渲染后都跑</b>，容易死循环。','漏变量 → 过期闭包（stale closure）；依赖里放每次新建的对象 → 无限重跑，先 useMemo 稳定引用。','页面重新可见时刷新用 <code>useFocusEffect</code> ≈ Vue 的 onActivated / keep-alive 激活，不是 mounted。'],
+  vue:'Vue 自动收集依赖，RN 要手写依赖数组，这是思维负担的主要来源。',
+  f:'接口请求怎么防竞态？→ AbortController 或忽略标志，在 cleanup 里取消。'},
+ {id:'A5',mod:'A 基础与渲染',q:'RN 没有 DOM / window / document / localStorage / CSS，哪些 Web 习惯必须改？',
+  p:['没有 window/document/localStorage；改用 AsyncStorage、expo-secure-store、<code>useWindowDimensions</code>。','没有浏览器 CSS：无级联、继承、伪类、媒体查询、CSS 动画；响应式靠 useWindowDimensions + Platform.select + 平台后缀文件。','没有 DOM 事件：<code>onClick</code>→<code>onPress</code>；键盘遮挡要 KeyboardAvoidingView 手动避让。','不能直接写 &lt;svg&gt;，要 react-native-svg；图标常用 @expo/vector-icons。','<b>fetch / Promise / async 是通用的</b>；RN 无 CORS（但 Android 明文 HTTP 要配置）。'],
+  vue:'不是「浏览器里的网页」，是「用 JS 写原生 UI」，能力边界由原生模块决定。',
+  f:'为什么 RN 不需要 CORS？→ CORS 是浏览器同源策略；但仍有 iOS ATS / Android cleartext 限制。'},
+ {id:'B1',mod:'B 样式与布局',q:'RN 样式与 CSS 的 5 个关键差别。',
+  p:['<b>样式是 JS 对象</b>：<code>StyleSheet.create</code>，驼峰属性；支持数组 <code>style={[a, cond &amp;&amp; b]}</code>（后者覆盖前者，≈ Vue 的 :class 数组）。','<b>无级联、无继承</b>：父样式不传给子组件（Text 嵌套 Text 例外），没有选择器。','<b>数值无单位</b>：<code>width:100</code> = 100 逻辑像素（iOS pt / Android dp），不是 CSS px；也支持 "50%"。','没有伪类 / 媒体查询 / 动画关键帧：交互态靠 state 切样式，动画靠 Reanimated。','<b>默认就是 flex</b> 且 column，没有 block / inline / grid。'],
+  vue:'scoped CSS 至少还有层叠，RN 是「每个组件自带一份独立样式表」。',
+  f:'内联样式对象和 StyleSheet.create 有区别吗？→ 功能无差别，但内联对象每次新建引用，会破坏 React.memo 的浅比较。'},
+ {id:'B2',mod:'B 样式与布局',q:'flexbox 默认方向与 Web 相反会引发什么错误？flex:1 到底是什么意思？',
+  p:['Web 默认 row，<b>RN 默认 column</b>；想并排必须显式写 <code>flexDirection:"row"</code>，这是 Vue 转 RN 第一个视觉 bug。','主轴随方向变：column 下 justifyContent 控<b>垂直</b>、alignItems 控<b>水平</b>。','<code>flex:1</code> = 占满父容器主轴剩余空间（column 下就是撑满高度）。','生效前提是父容器有确定高度；ScrollView 内的子项写 flex:1 通常不生效。','position 默认 relative；zIndex 只在<b>同一父级</b>比较，Android 还有 elevation。'],
+  vue:'写惯了 display:flex; flex-direction:row 的人，在 RN 里要反过来想「竖着排是默认」。',
+  f:'既想 flex:1 又想有最小高度？→ minHeight + flexGrow，或 flexShrink:0 防挤压。'},
+ {id:'B5',mod:'B 样式与布局',q:'安全区、状态栏、键盘遮挡、平台差异怎么处理？',
+  p:['刘海/Home Indicator：<code>react-native-safe-area-context</code> 的 SafeAreaView 或 <code>useSafeAreaInsets()</code>（比 RN 内置更可靠）。','状态栏：<code>&lt;StatusBar barStyle="dark-content" /&gt;</code> 或 expo-status-bar。','键盘：<code>KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : undefined}</code>；复杂表单配 keyboard-controller。','平台差异三件套：<code>Platform.OS</code>、<code>Platform.select</code>、文件后缀 <code>.ios.tsx</code>/<code>.android.tsx</code>。','<code>useWindowDimensions()</code> 随旋转更新；<code>Dimensions.get</code> 是快照不会自动更新。'],
+  vue:'≈ 处理 safe-area-inset 与移动端 100vh，但 RN 必须显式处理且双端行为不同。',
+  f:'Android 键盘默认怎么处理？→ windowSoftInputMode="adjustResize"，与 iOS 的 padding 策略不同。'},
+ {id:'C1',mod:'C 列表与导航',q:'ScrollView / FlatList / FlashList 怎么选？FlashList 为什么快？',
+  p:['ScrollView 一次性渲染<b>全部</b>子项：只适合十几项以内，几千条会 OOM/卡死。','FlatList 窗口化只渲染可视区，但滑出屏幕的项是<b>销毁再重建</b>，创建开销仍在。','FlashList 做<b>视图回收复用</b>（recyclerlistview）：cell 滑出后换数据重贴，创建次数大幅减少。','必须给 <code>estimatedItemSize</code>；估值偏差大导致滚动跳动、白屏、反复测量 —— 它最常见的坑。','口径：<b>超过约 20 条 / 无限加载 → FlashList</b>；图片一律 expo-image（内存+磁盘缓存、占位、优先级）。'],
+  vue:'v-for 全量渲染 ≈ ScrollView；虚拟滚动库 ≈ FlatList/FlashList。',
+  f:'getItemLayout 什么时候必须给？→ 行高固定时提供，可跳转任意位置、避免逐项测量。'},
+ {id:'C3',mod:'C 列表与导航',q:'Expo Router 和 vue-router / Nuxt 的对应关系，目录怎么组织？',
+  p:['<b>几乎同构于 Nuxt 的 pages/</b>：<code>app/index.tsx</code>→/，<code>app/order/[id].tsx</code>→/order/1，<code>(tabs)</code> 是分组（不进 URL），<code>(modal)</code> 做模态。','<code>app/_layout.tsx</code> ≈ Nuxt layout：根布局放 &lt;Stack /&gt;，tabs 布局放 &lt;Tabs /&gt;；<b>认证守卫放 _layout</b>，用 &lt;Redirect href="/login" /&gt;。','只有路由文件放 app/ 下；组件/ hooks/ services/ 各归各位，文件名 kebab-case。','Stack/Tabs 是<b>原生导航容器</b>（不是 DOM history 切换），自带转场、手势返回、内存管理；深链接可直接开指定页。','<code>useLocalSearchParams()</code> ≈ route.params，<code>usePathname()</code> ≈ route.path。'],
+  vue:'用过 Nuxt 的话心智模型可直接迁移，差别是 layout 里声明 Stack/Tabs 而不是 &lt;NuxtPage&gt;。',
+  f:'[id].tsx 里怎么拿参数？→ const { id } = useLocalSearchParams&lt;{ id: string }&gt;()，类型自己给。'},
+ {id:'C4',mod:'C 列表与导航',q:'页面传参与「返回列表后刷新」怎么做？',
+  p:['传参：<code>router.push({ pathname:"/order/[id]", params:{ id:"1" } })</code>，参数进 URL 可分享可深链。','<b>只传 id，别塞整个对象</b>：URL 变长、需序列化、刷新/深链后数据会丢。','返回刷新三选一：useFocusEffect 里 refetch；提交成功后 <code>invalidateQueries(["orders"])</code>；Zustand 标 dirty 后聚焦重取。','<b>乐观更新</b>：setQueryData 先改缓存 → 发请求 → 失败回滚，避免整页 loading 与重复请求。','登录成功后用 <code>router.replace</code>，避免返回键回到登录页。'],
+  vue:'≈ onActivated 里刷新 + 全局 store 的 dirty 标记，思路完全一样。',
+  f:'为什么不建议用路由参数传整个对象？→ 深链接/刷新后数据丢失，且序列化与 URL 长度不可控。'},
+ {id:'D1',mod:'D 状态与网络',q:'Zustand ≈ Pinia？它和 React Query 的职责怎么分？',
+  p:['<b>Zustand ≈ Pinia</b>：create() 建 store、按 selector 精确订阅，不需要 Provider 包裹整棵 App。','<b>职责边界（高频）</b>：Zustand 管客户端状态（用户、主题、筛选、草稿）；React Query 管服务端状态（接口数据、缓存、stale、重取、分页、乐观更新）。<b>不是二选一</b>。','把所有接口数据塞进 Zustand = 自己重写一套缓存/失效/竞态逻辑。','<code>useStore(s =&gt; s.user)</code> 精确订阅；<code>useStore()</code> 会订阅整个 store，任何字段变化都重渲染。','Context 适合低频小范围（主题/国际化），高频更新容易全树重渲染。'],
+  vue:'Pinia ≈ Zustand；VueQuery/SWR ≈ React Query。Vue 项目里怎么分，RN 里就怎么分。',
+  f:'登录态放哪？→ 用户信息放 Zustand（内存）+ token 放 expo-secure-store（持久化），启动时读回水合。'},
+ {id:'D2',mod:'D 状态与网络',q:'怎么封装 fetch 客户端？RN 与 Web 的网络差异有哪些？',
+  p:['封一层 API client：baseURL、Authorization 注入、AbortController 超时、统一错误结构与日志。','<b>401 刷新流程</b>：refresh 换新 access → 重放原请求；并发 401 要单例刷新，失败则登出清 token。','<b>RN 没有 CORS</b>（不是浏览器），这是与 Web 最大差异；但 Android 9+ 禁明文 HTTP、iOS 有 ATS 要求 HTTPS。','联调：Android 模拟器 <code>10.0.2.2</code>、真机局域网 IP、<code>adb reverse tcp:3000 tcp:3000</code>；iOS 模拟器 localhost 可用。','弱网：React Query retry + 缓存兜底、NetInfo 判断联网、失败给可重试 UI。'],
+  vue:'axios 拦截器的经验 100% 可迁移，只是把 CORS 那摊换成移动端网络配置。',
+  f:'token 为什么不放 AsyncStorage？→ 明文存储，见 D4。'},
+ {id:'D4',mod:'D 状态与网络',q:'AsyncStorage / localStorage / expo-secure-store 的区别，敏感数据放哪？',
+  p:['AsyncStorage ≈ localStorage 但<b>异步</b>（Promise）、<b>明文不加密</b>、有容量限制；适合主题、是否首次启动。','<code>expo-secure-store</code> 走 iOS Keychain / Android Keystore，<b>token、refresh token、凭证必须放这里</b>。','<code>EXPO_PUBLIC_*</code> 会被打进客户端 bundle，反包即可读，<b>绝不能放密钥</b>；密钥放服务端或 EAS Secrets。','AsyncStorage 不适合大对象/列表，批量用 multiGet/multiSet，频繁读写会阻塞。','结构化/高频数据用 expo-sqlite、WatermelonDB 或 MMKV（同步且快）。'],
+  vue:'Web 上 localStorage 存 token 也已不推荐，RN 只是给了官方安全替代。',
+  f:'MMKV 和 AsyncStorage 怎么选？→ 高频同步小数据用 MMKV，简单异步键值用 AsyncStorage，敏感一律 secure-store。'},
+ {id:'E1',mod:'E 原生与工程化',q:'Expo Go / Dev Client / bare(prebuild) 区别？什么时候必须写原生？',
+  p:['<b>Expo Go</b>：零配置扫码即跑，但只能用 Expo SDK 内置原生模块，<b>不能加自定义原生代码</b>。','<b>Dev Client</b>：带自定义原生模块的调试壳，仍保留快速刷新；需要第三方原生 SDK 时走这条。','<b>prebuild</b> 生成 ios/ android/；现在推荐 <b>CNG + config plugin</b>：在 app.json / 插件里声明原生配置，原生目录可随时再生成，<b>不要 eject 后手改</b>。','必须写原生/TurboModule：Expo 不覆盖的厂商 SDK（特定支付/蓝牙/自研算法）、后台长驻服务、复用已有原生代码。','判断口径：先查 Expo SDK → 再查 config plugin → 都没有才自己写原生模块。'],
+  vue:'Expo ≈ create-vue/Vite 预设；写原生模块 ≈ 自己写构建插件去碰底层。',
+  f:'Expo 能上架吗？→ 能，EAS Build 产出标准 IPA/AAB，与是否用 Expo 无关。'},
+ {id:'E2',mod:'E 原生与工程化',q:'相机/定位权限怎么申请？iOS 与 Android 的关键差异？',
+  p:['用 <code>useCameraPermissions()</code> / <code>requestPermissionsAsync()</code>；<b>在用户触发功能时</b>请求，别启动时全要（也影响审核）。','处理三态 granted / denied / undetermined；永久拒绝时 <code>canAskAgain === false</code>，引导 <code>Linking.openSettings()</code>。','<b>iOS</b>：Info.plist 必须写用途描述（NSCameraUsageDescription 等），经 app.json 的 ios.infoPlist 或 config plugin；<b>文案为空会崩溃或被拒审</b>。','<b>Android</b>：权限写 AndroidManifest（android.permissions）；后台定位需单独 ACCESS_BACKGROUND_LOCATION（Android 10+ 不能与前台一次申请），长时定位要前台服务 + 常驻通知（14 更严）。','iOS 后台定位还需 UIBackgroundModes: ["location"] + Always 描述，并向审核说明用途。','推送：expo-notifications 拿 ExpoPushToken 存<b>服务端</b>；FCM/APNs 凭证只在服务端。'],
+  vue:'Web 权限是浏览器弹窗且能力有限；RN 是操作系统级 + 商店审核级，必须提前在配置文件声明。',
+  f:'权限被永久拒绝怎么办？→ 不能再弹系统框，只能给说明 + 跳系统设置。'},
+ {id:'E3',mod:'E 原生与工程化',q:'调试、构建与发布：Metro / Hermes / EAS 各是什么？OTA 能更什么？',
+  p:['<b>Metro</b> ≈ Vite/Webpack；<code>npx expo start -c</code> 清缓存是「改了没生效」第一招；Fast Refresh ≈ HMR。','<b>Hermes</b> ≈ 移动端版 V8（默认引擎），预编译字节码缩短启动、降内存。','调试：摇真机/Cmd+D 开 Dev Menu、React DevTools、Expo DevTools、LogBox、性能监视器（看 JS/UI 线程 FPS）。','<b>EAS Build</b>（云构建 IPA/AAB）、<b>EAS Submit</b>（提交商店）、<b>EAS Update</b>（OTA）。','<b>OTA 边界（必考）</b>：只能更 <b>JS bundle 与静态资源</b>，不能改原生代码、原生依赖版本、权限、app.json 原生配置；这些变了必须重新构建过审，且要管 runtimeVersion 兼容。'],
+  vue:'OTA ≈ 静态资源随时发；原生层变更 ≈ 必须重新发版，这个「双层发布」Web 开发者最易忽略。',
+  f:'线上 JS 报错怎么定位？→ Sentry + sourcemap 上传（EAS 可自动），按 runtimeVersion/构建号区分。'},
+ {id:'F1',mod:'F 性能与新架构',q:'列表/页面重渲染怎么排查与治理？',
+  p:['先定位线程：性能监视器看 <b>JS 线程忙</b>（业务/重渲染）还是 <b>UI 线程忙</b>（层级过深、图片解码、阴影）。','四件套：React.memo 包列表项、useCallback 稳定回调、useMemo 稳定对象、避免 JSX 内联样式对象/内联函数。','Zustand 用精确 selector；React Query 用细粒度 queryKey；列表 key 用 id 不用 index。','FlashList 给准 estimatedItemSize；图片换 expo-image 并指定尺寸。','减少视图层级、避免不必要 shadow/opacity 叠加；大计算移 useMemo 或原生侧。'],
+  vue:'Vue 靠依赖追踪自动「只更新用到的组件」，RN 要手动用 memo + 稳定引用达到同样效果。',
+  f:'React.memo 为什么有时没用？→ 父组件每次传新对象/函数引用，浅比较必然失败。'},
+ {id:'F2',mod:'F 性能与新架构',q:'JSI / Fabric / TurboModules 各解决什么问题？（新手答概念层即可）',
+  p:['<b>旧 Bridge</b>：JS 与原生通信要序列化成 JSON、走异步队列批处理，跨线程有延迟，且原生模块启动时全量初始化。','<b>JSI</b>：JS 直接持有 C++ 对象引用并可<b>同步调用</b>，去掉序列化与 Bridge 异步开销，是另外两者的地基。','<b>Fabric</b>：Shadow Tree 统一放 C++，支持<b>同步 measure/layout</b>；解决列表项高度跳动、手势/锚点需即时读取布局等场景。','<b>TurboModules</b>：原生模块<b>懒加载</b> + Codegen 类型安全，缩短启动时间。','RN <b>0.76 起新架构默认开启</b>；能讲清「序列化 / 异步 / 启动初始化」三个痛点就过关。'],
+  vue:'≈ 从全量响应式依赖到编译期精细优化，方向都是「减少不必要的中间层开销」。',
+  f:'既然 JSI 支持同步，为什么原生调用还写 async？→ 耗时 IO/定位/相机仍应异步避免阻塞 JS 线程；同步主要给轻量布局与即时结果。'},
+ {id:'F3',mod:'F 性能与新架构',q:'Reanimated 为什么流畅？哪些属性绝对不能拿来动画？',
+  p:['动画逻辑写成 <b>worklet 跑在 UI 线程</b>，不依赖每帧跨线程通信；JS 线程卡顿时动画仍保帧率。','<code>useSharedValue</code> + <code>withTiming</code>/<code>withSpring</code> + <code>useAnimatedStyle</code>；改共享值而非 React state（改 state 会触发整棵重渲染）。','<b>只动画 transform 与 opacity</b>：走 GPU 合成，不触发重新测量布局。','<b>不要动画 width / height / top / left / margin</b>：每次都触发布局重排，必掉帧；变大用 scale，移动用 translate。','手势配 react-native-gesture-handler（同在 UI 线程），做拖拽、滑动删除、下拉刷新。'],
+  vue:'≈ CSS 里优先 transform/opacity 触发合成层，原理一致，RN 靠 Reanimated 实现。',
+  f:'useSharedValue 和 useState 区别？→ 前者在 UI 线程、不触发 React 渲染；后者触发整棵协调。'},
+ {id:'G1',mod:'G Node.js',q:'设计一个「大文件上传 + 进度 + 断点续传」接口。',
+  p:['<b>分层</b>：router → controller → service → storage；Zod 校验参数；统一响应/错误 + traceId 日志。','<b>流式 multipart</b>：busboy/multer 或把 req 直接 pipe 到对象存储；<b>不要用 base64</b>（体积 +33%、整块进内存易 OOM）。更优解是后端签发<b>预签名 URL</b>，客户端直传，后端只记元数据。','<b>分片/断点/秒传</b>：初始化返 uploadId → 按 partNumber 上传记 ETag → complete 合并；断线查已上传分片；hash 命中已有记录则秒传。','<b>进度</b>：客户端本地已知已发字节，简单场景无需服务端推；服务端处理进度用 <b>SSE</b> 或 <b>WebSocket</b>，别轮询 REST。','可靠性：幂等 key、大小限制、限流 429、超时重试、类型校验、临时文件清理。'],
+  vue:'Web 端 FormData + axios onUploadProgress 经验可用；差异是移动弱网更常见，断点是刚需。',
+  f:'为什么移动端特别需要断点续传？→ 网络切换、后台挂起、大图视频耗时长，重传成本极高。'},
+ {id:'G2',mod:'G Node.js',q:'JWT 的 access / refresh 怎么设计？RN 端存哪里？',
+  p:['access 短时（10-30 min）随请求带；refresh 长时（7-30 d）只在刷新接口用，且<b>刷新时轮换</b>旧的立即失效。','服务端存 refresh 的 <code>jti</code> 白/黑名单，检测重放（旧 refresh 再用 → 吊销整条令牌链），配合设备标识。','RN 端：access 放内存/Zustand，refresh 与 token 放 <code>expo-secure-store</code>；不要 AsyncStorage / 硬编码 / EXPO_PUBLIC_*。','401 刷新要<b>单例并发控制</b>（多个请求同时 401 只发一次 refresh），失败清凭证跳登录。','Web 可用 httpOnly Cookie 缓解 XSS；RN 没浏览器 Cookie 语义，通常 Authorization header + secure-store。'],
+  vue:'axios 响应拦截器刷 token 的逻辑照搬，只是存储层换成 Keychain/Keystore。',
+  f:'登出怎么让令牌立刻失效？→ 吊销 refresh + access 短期黑名单，或缩短 access 有效期。'},
+ {id:'G4',mod:'G Node.js',q:'RN App 怎么和本地 / 线上后端联调？',
+  p:['Android 模拟器 <code>10.0.2.2</code> 指向宿主机；<code>adb reverse tcp:3000 tcp:3000</code> 让设备用 localhost。','iOS 模拟器 localhost 可用；真机必须用<b>局域网 IP</b> 或内网穿透（ngrok / cloudflared）。','真机访问 HTTP 会被 Android 明文限制 / iOS ATS 拦；开发期配 usesCleartextTraffic 或 ATS 例外，<b>生产必须 HTTPS</b>。','环境切换用 EXPO_PUBLIC_API_URL + EAS profile/env（development / preview / production），别手改代码。','排查顺序：能否 ping 通 → 后端是否绑 <code>0.0.0.0</code>（而非只 127.0.0.1）→ 防火墙 → 证书 → 请求日志。'],
+  vue:'≈ Vite proxy 与跨域那套，只是「浏览器」换成了「手机/模拟器」这台独立设备。',
+  f:'后端绑 127.0.0.1 手机为什么连不上？→ 手机是另一台设备，127.0.0.1 指向它自己。'},
+ {id:'H1',mod:'H 行为/项目题',q:'「你没有 RN 项目经验，为什么觉得自己能上手？」（最该先背）',
+  p:['见下方第 5 节完整可背诵话术。','骨架：① <b>不撒谎、不编项目</b> ② 用对照表把 Vue 经验折算成 RN 能力 ③ 明确说出「我知道自己缺什么」 ④ 给可验证方案（现场写 demo）。','点名三块 Web 没有的东西：原生权限与平台差异、无 DOM/CSS 的样式布局体系、JS/UI 双线程性能模型。','主动说出风险点（原生配置、真机调试）与切入路径（先 Expo 托管工作流 → config plugin 处理原生需求）。','收尾给「可现场写带列表/详情/表单的小 demo」——把主观自信变成可验证承诺。'],
+  vue:'用 Nuxt/Pinia/VueQuery 的对应关系，把「几年 Web 经验」翻译成面试官听得懂的 RN 能力。',
+  f:'你预期最大的坑是什么？→ 见 H2 与十大坑：flex 默认方向、原生配置、双层发布。'},
+ {id:'H2',mod:'H 行为/项目题',q:'Vue → RN 最大的思维转换是什么？',
+  p:['<b>响应式 → 不可变</b>：Vue 自动追踪，RN 必须显式 setState 返回新引用 + 手写 useEffect 依赖。','<b>浏览器 → 原生容器</b>：无 DOM/CSS 级联/window；样式默认 column flex、文字包 Text、Image 给尺寸。','<b>单线程 → 双线程</b>：JS 线程跑业务、UI 线程跑渲染动画，跨线程有成本 → 才有 Reanimated / FlashList / memo。','<b>一次发版 → 双层发版</b>：JS 可 OTA，原生变更必须重新构建过审。','加分收尾：「Vue 经验帮我解决了状态与路由怎么组织，我真正要补的是移动端原生边界」。'],
+  vue:'把「我会写页面」升级成「我知道这个页面在手机上是怎么被画出来的」。',
+  f:'哪个转换最容易踩坑？→ 布局与样式（默认 column、无继承），因为它是立刻可见的错误。'},
+ {id:'H3',mod:'H 行为/项目题',q:'RN / Flutter / 原生 / H5 怎么选？',
+  p:['<b>RN</b>：JS/TS 生态、复用 Web 团队与代码、Expo + OTA 迭代快，适合中低原生复杂度的业务型 App；代价是版本兼容与原生边界。','<b>Flutter</b>：自绘引擎，UI 一致性与动画强；代价是 Dart 独立栈、包体积、与现有 Web/原生复用度低。','<b>原生</b>：极致性能、系统能力第一时间可用；代价是两套人力与发布节奏。','<b>H5/Hybrid</b>：内容型、强动态运营、随时发版；代价是体验与系统能力受限。','<b>给结论</b>：「对我这个 Web 背景、以表单与列表为主的场景，RN 迁移成本与迭代效率最合适；后续若出现大量自绘动画或强硬件能力，我会评估局部原生模块而不是整体换栈」。'],
+  vue:'选型题要输出判断而不是罗列特性，最后一定落到「我的场景 + 我的背景」。',
+  f:'RN 性能不如原生吗？→ 新架构已大幅缩小差距，瓶颈多在 JS 线程业务与视图层级，而非「跨端」本身。'}
+];
+
+const C = [
+ ['A4','A 基础与渲染','条件渲染与列表渲染怎么写？key 为什么不能用 index','{cond && } / .map / 复用错位'],
+ ['A6','A 基础与渲染','Props 向下、回调向上，children 怎么用','单向数据流 ≈ Vue props/emit'],
+ ['A7','A 基础与渲染','受控输入框与 TextInput 的 Web 差异','value + onChangeText、无 v-model'],
+ ['A8','A 基础与渲染','useRef / forwardRef / 命令式调用','聚焦输入框、ScrollView.scrollTo'],
+ ['A9','A 基础与渲染','自定义 Hook 怎么抽','≈ Vue composable'],
+ ['A10','A 基础与渲染','TypeScript 在 RN 里的必要性与 Props 类型','NativeStackScreenProps、泛型'],
+ ['B3','B 样式与布局','逻辑像素 dp/pt 与屏幕适配','无单位数字、PixelRatio、断点'],
+ ['B4','B 样式与布局','position / zIndex / elevation 与 Web 差异','同父级比较、Android elevation'],
+ ['B6','B 样式与布局','StyleSheet.create 与内联样式数组','覆盖顺序、稳定引用'],
+ ['B7','B 样式与布局','深色模式怎么做','useColorScheme / 主题 token'],
+ ['B8','B 样式与布局','阴影、圆角、渐变的平台差异','iOS shadow* / Android elevation / expo-linear-gradient'],
+ ['C2','C 列表与导航','FlatList 关键 props 与性能坑','keyExtractor / getItemLayout / extraData / onEndReachedThreshold'],
+ ['C5','C 列表与导航','下拉刷新与无限加载','onRefresh / onEndReached / 防重复触发'],
+ ['C6','C 列表与导航','Stack / Tabs / Drawer 与原生导航容器','手势返回、转场、栈内存'],
+ ['C7','C 列表与导航','模态与表单弹层怎么建','(modal) 分组 + presentation: modal'],
+ ['C8','C 列表与导航','深链接 / Universal Link 怎么配','scheme、app.json、apple-app-site-association'],
+ ['C9','C 列表与导航','认证守卫放哪一层','_layout + <Redirect>'],
+ ['D3','D 状态与网络','React Query 的 staleTime / gcTime / 乐观更新','缓存新鲜度、setQueryData / 回滚'],
+ ['D5','D 状态与网络','表单方案怎么选','React Hook Form + Zod'],
+ ['D6','D 状态与网络','接口竞态与取消请求','AbortController + cleanup'],
+ ['D7','D 状态与网络','离线与弱网体验','NetInfo、retry、缓存兜底'],
+ ['E4','E 原生与工程化','Expo SDK 与 RN 版本兼容怎么查','npx expo-doctor、兼容性表'],
+ ['E5','E 原生与工程化','config plugin 是干什么的','生成期改原生配置，CNG'],
+ ['E6','E 原生与工程化','推送全流程（客户端 → 服务端 → APNs/FCM）','ExpoPushToken、凭证只在服务端'],
+ ['E7','E 原生与工程化','生物识别 / 相机 / 相册常用模块','expo-local-authentication / expo-image-picker'],
+ ['E8','E 原生与工程化','EAS Build 三档 profile','development / preview / production'],
+ ['E9','E 原生与工程化','上架检查清单','权限文案、隐私清单、截图、签名、审核账号'],
+ ['F4','F 性能与新架构','JS 线程 / UI 线程 / 原生线程各干什么','掉帧定位到具体线程'],
+ ['F5','F 性能与新架构','启动时间（TTI）与包体积优化','Hermes、懒加载、bundle 分析'],
+ ['F6','F 性能与新架构','内存泄漏排查','未清理监听/定时器/订阅'],
+ ['F7','F 性能与新架构','Jest + RNTL / Maestro 分别测什么','单元组件测试 / 端到端流程'],
+ ['F8','F 性能与新架构','新架构下「eject / 桥接」说法还准确吗','Bridge 已被 JSI 取代'],
+ ['G3','G Node.js','统一错误码、参数校验、限流与日志','Zod / 429 / traceId / 结构化日志'],
+ ['G5','G Node.js','REST vs GraphQL vs WebSocket 怎么选','业务型 App 多端点聚合'],
+ ['G6','G Node.js','环境变量与密钥管理','服务端 env / EAS Secrets'],
+ ['G7','G Node.js','部署与进程管理','Docker / PM2 / 健康检查 / 灰度'],
+ ['H4','H 行为/项目题','「你遇到过什么坑」怎么答才不露怯','讲预判与对照，不编造项目事故'],
+ ['H5','H 行为/项目题','两周上手一个 RN 项目的计划','跑通 Expo → 页面路由 → 接口 → 原生 → 测试构建']
+];
+
+const esc = s => String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+  .replace(/"/g,'&quot;').replace(/'/g,'&#39;');
+const qlist = document.getElementById('qlist');
+const tbody = document.getElementById('checklist');
+const search = document.getElementById('search');
+const modSel = document.getElementById('mod');
+
+qlist.innerHTML = Q.map(x => `
+  <details class="q" data-id="${x.id}" data-mod="${x.mod}" data-text="${esc((x.q+' '+x.p.join(' ')+' '+x.vue+' '+x.f).toLowerCase())}">
+    <summary><span class="qid">${x.id}</span><span>${x.q}</span><span class="tag">${x.mod.split(' ')[0]} · 必背</span></summary>
+    <div class="qbody"><ul>${x.p.map(p => '<li>'+p+'</li>').join('')}</ul>
+      <div class="vue"><span class="lbl">Vue 类比：</span>${x.vue}</div>
+      <div class="follow"><span class="lbl">面试官追问：</span>${x.f}</div>
+    </div>
+  </details>`).join('');
+
+let done = {};
+try { done = JSON.parse(localStorage.getItem('rn-interview-check') || '{}'); } catch(e){ done = {}; }
+tbody.innerHTML = C.map(([id,mod,q,kw]) => `
+  <tr data-cid="${id}" data-mod="${mod}" data-text="${esc((id+' '+q+' '+kw).toLowerCase())}">
+    <td><label class="ck"><input type="checkbox" data-ck="${id}" ${done[id]?'checked':''}></label></td>
+    <td><b>${id}</b></td><td>${esc(q)}</td><td>${esc(kw)}</td></tr>`).join('');
+
+function updateProgress(){
+  const n = Object.values(done).filter(Boolean).length;
+  document.getElementById('progress').textContent = '已掌握 ' + n + ' / ' + C.length;
+}
+tbody.addEventListener('change', e => {
+  if(!e.target.dataset.ck) return;
+  done[e.target.dataset.ck] = e.target.checked;
+  try { localStorage.setItem('rn-interview-check', JSON.stringify(done)); } catch(err){}
+  updateProgress();
+});
+updateProgress();
+
+function applyFilter(){
+  const kw = search.value.trim().toLowerCase();
+  const mod = modSel.value;
+  let nq = 0, nc = 0;
+  qlist.querySelectorAll('details.q').forEach(el => {
+    const ok = (!kw || el.dataset.text.includes(kw)) && (!mod || el.dataset.mod === mod);
+    el.classList.toggle('hide', !ok); if(ok) nq++;
+  });
+  tbody.querySelectorAll('tr').forEach(el => {
+    const ok = (!kw || el.dataset.text.includes(kw)) && (!mod || el.dataset.mod === mod);
+    el.classList.toggle('hide', !ok); if(ok) nc++;
+  });
+  document.getElementById('qempty').classList.toggle('hide', nq > 0);
+  document.getElementById('cempty').classList.toggle('hide', nc > 0);
+  document.getElementById('counter').textContent = '必背 ' + nq + ' 题 · 查漏 ' + nc + ' 条';
+}
+search.addEventListener('input', applyFilter);
+modSel.addEventListener('change', applyFilter);
+applyFilter();
+
+const all = () => qlist.querySelectorAll('details.q');
+document.getElementById('expand').onclick = () => all().forEach(d => d.open = true);
+document.getElementById('collapse').onclick = () => all().forEach(d => d.open = false);
+document.getElementById('print').onclick = () => { all().forEach(d => d.open = true); window.print(); };
+window.addEventListener('beforeprint', () => all().forEach(d => d.open = true));
+</script>
+</body>
+</html>

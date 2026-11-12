@@ -1,0 +1,33 @@
+Create React Native CLI demo
+使用 React Native CLI（官方纯原生脚手架）
+# 1. 创建 React Native (CLI) 项目
+npx @react-native-community/cli init RN_Cli_Demo
+
+# 2. 进入项目目录
+cd RN_Cli_Demo
+
+# 3. 安装页面路由导航核心库
+npm install @react-navigation/native
+
+# 4. 安装导航所需的底层原生屏幕支持库
+npm install react-native-screens
+
+# 5. 安装导航所需的设备安全区域支持库
+npm install react-native-safe-area-context
+
+# 6. 安装本地数据持久化存储库 (类似 localStorage)
+npm install @react-native-async-storage/async-storage
+
+# 7. 安装常用矢量图标库
+npm install react-native-vector-icons
+
+# 8. 安装 HTTP 网络请求库
+npm install axios
+
+# 9. 安装图标库的 TypeScript 类型定义 (开发依赖)
+npm install --save-dev @types/react-native-vector-icons
+
+# 10. 进入 ios 目录并同步 CocoaPods 原生依赖 (仅限 macOS 环境)
+cd ios
+pod install
+cd ..
