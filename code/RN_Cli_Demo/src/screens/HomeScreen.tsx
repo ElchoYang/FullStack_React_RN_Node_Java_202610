@@ -1,5 +1,22 @@
-import { ScrollView, View, Text, Pressable, StyleSheet } from 'react-native';
+import {
+  ScrollView,
+  View,
+  Text,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  Button,
+} from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import React, { useState } from 'react';
+import DateTimePicker, {
+  DateTimePickerChangeEvent,
+} from '@react-native-community/datetimepicker';
+import {
+  NavigationProp,
+  ParamListBase,
+  useNavigation,
+} from '@react-navigation/native';
 
 const destinations = [
   {
@@ -17,9 +34,51 @@ const destinations = [
     country: 'Thailand',
     price: '$150',
   },
+  {
+    city: 'Seoul',
+    country: 'South Korea',
+    price: '$280',
+  },
 ];
 
 export default function HomeScreen() {
+  const navigation = useNavigation<NavigationProp<ParamListBase>>();
+
+  const [fromCity, setFromCity] = useState('Shenzhen (SZX)');
+  const [toCity, setToCity] = useState('Tokyo (NRT)');
+  const [passenger, setPassenger] = useState(1);
+  const [date, setDate] = useState(new Date());
+  const [show, setShow] = useState(false);
+  const swapLocations = () => {
+    const temp = fromCity;
+
+    setFromCity(toCity);
+    setToCity(temp);
+  };
+
+  const addPassenger = () => {
+    setPassenger(() => passenger + 1);
+  };
+
+  const showMode = () => {
+    setShow(true);
+  };
+  // 当用户更改日期或点击确认/取消时触发
+  const onChangeDepartureDate = (
+    event: DateTimePickerChangeEvent,
+    selectedDate: Date,
+  ) => {
+    const currentDate = selectedDate || date;
+    // Android 上点击关闭后需要隐藏组件
+    setShow(false);
+    setDate(currentDate);
+  };
+
+  const onSearchFlights = ({}) => {
+    // Jump to Search Flight pages
+    navigation.navigate('SearchFlight' as never);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView showsVerticalScrollIndicator={true}>
@@ -47,27 +106,59 @@ export default function HomeScreen() {
 
           <View style={styles.locationBox}>
             <Text style={styles.label}>FROM</Text>
-            <Text style={styles.location}>Hong Kong (HKG)</Text>
+            <Text style={styles.location}>{fromCity}</Text>
+          </View>
+
+          <View>
+            <Pressable
+              style={styles.swapButton}
+              onPress={() => swapLocations()}
+            >
+              <Text style={styles.swapButtonText}>⇄</Text>
+            </Pressable>
           </View>
 
           <View style={styles.locationBox}>
             <Text style={styles.label}>TO</Text>
-            <Text style={styles.location}>Tokyo (NRT)</Text>
+            <Text style={styles.location}>{toCity}</Text>
           </View>
 
           <View style={styles.detailsRow}>
             <View>
               <Text style={styles.label}>DEPARTURE</Text>
-              <Text style={styles.detail}>20 Nov 2026</Text>
+              <Pressable onPress={showMode}>
+                <Text style={styles.detail}>{date.toLocaleDateString()}</Text>
+              </Pressable>
+              {show && (
+                <DateTimePicker
+                  testID="dateTimePicker"
+                  value={date}
+                  mode="date" // 可选: 'date' | 'time' | 'datetime'
+                  display="default" // 可选: 'default' | 'spinner' | 'calendar' | 'clock'
+                  onValueChange={onChangeDepartureDate}
+                />
+              )}
             </View>
 
             <View>
-              <Text style={styles.label}>PASSENGERS</Text>
-              <Text style={styles.detail}>1 Adult</Text>
+              <Text style={styles.label}>
+                PASSENGERS
+                <Pressable
+                  style={({ pressed }) =>
+                    pressed
+                      ? [styles.addPassengerView, styles.pressedItem]
+                      : styles.addPassengerView
+                  }
+                  onPress={addPassenger}
+                >
+                  <Text style={styles.addPassengerText}>+</Text>
+                </Pressable>
+              </Text>
+              <Text style={styles.detail}>{passenger} Adult</Text>
             </View>
           </View>
 
-          <Pressable style={styles.searchButton}>
+          <Pressable style={styles.searchButton} onPress={onSearchFlights}>
             <Text style={styles.searchButtonText}>Search Flights</Text>
           </Pressable>
         </View>
@@ -166,6 +257,14 @@ const styles = StyleSheet.create({
     marginBottom: 6,
   },
 
+  addPassengerView: {
+    marginTop: 12,
+  },
+  addPassengerText: {
+    paddingHorizontal: 6,
+    fontSize: 22,
+  },
+
   location: {
     fontSize: 16,
     fontWeight: '600',
@@ -182,6 +281,21 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: '#172B4D',
+  },
+
+  swapButton: {
+    backgroundColor: '#e3e3e3',
+    width: '30%',
+    padding: 16,
+    borderRadius: 10,
+    alignItems: 'center',
+    alignSelf: 'center',
+    marginBottom: 12,
+  },
+  swapButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: 'bold',
   },
 
   searchButton: {
@@ -234,5 +348,9 @@ const styles = StyleSheet.create({
   price: {
     color: '#E58A25',
     fontWeight: 'bold',
+  },
+
+  pressedItem: {
+    opacity: 0.5,
   },
 });

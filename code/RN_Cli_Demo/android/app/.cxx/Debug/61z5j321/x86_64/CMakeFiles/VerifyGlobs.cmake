@@ -12,6 +12,97 @@ if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   file(TOUCH_NOCREATE "C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/CMakeFiles/cmake.verify_globs")
 endif()
 
+# react_codegen_SRCS at C:/learning/React/code/RN_Cli_Demo/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "C:/learning/React/code/RN_Cli_Demo/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/*.cpp")
+set(OLD_GLOB
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/AsyncStorageSpec-generated.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/CMakeFiles/cmake.verify_globs")
+endif()
+
+# react_codegen_SRCS at C:/learning/React/code/RN_Cli_Demo/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "C:/learning/React/code/RN_Cli_Demo/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/react/renderer/components/AsyncStorageSpec/*.cpp")
+set(OLD_GLOB
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/react/renderer/components/AsyncStorageSpec/ComponentDescriptors.cpp"
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/react/renderer/components/AsyncStorageSpec/EventEmitters.cpp"
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/react/renderer/components/AsyncStorageSpec/Props.cpp"
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/react/renderer/components/AsyncStorageSpec/ShadowNodes.cpp"
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/@react-native-async-storage/async-storage/android/build/generated/source/codegen/jni/react/renderer/components/AsyncStorageSpec/States.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/CMakeFiles/cmake.verify_globs")
+endif()
+
+# react_codegen_SRCS at C:/learning/React/code/RN_Cli_Demo/node_modules/@react-native-community/datetimepicker/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "C:/learning/React/code/RN_Cli_Demo/node_modules/@react-native-community/datetimepicker/android/build/generated/source/codegen/jni/*.cpp")
+set(OLD_GLOB
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/@react-native-community/datetimepicker/android/build/generated/source/codegen/jni/RNDateTimePickerCGen-generated.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/CMakeFiles/cmake.verify_globs")
+endif()
+
+# react_codegen_SRCS at C:/learning/React/code/RN_Cli_Demo/node_modules/@react-native-community/datetimepicker/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "C:/learning/React/code/RN_Cli_Demo/node_modules/@react-native-community/datetimepicker/android/build/generated/source/codegen/jni/react/renderer/components/RNDateTimePickerCGen/*.cpp")
+set(OLD_GLOB
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/@react-native-community/datetimepicker/android/build/generated/source/codegen/jni/react/renderer/components/RNDateTimePickerCGen/ComponentDescriptors.cpp"
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/@react-native-community/datetimepicker/android/build/generated/source/codegen/jni/react/renderer/components/RNDateTimePickerCGen/EventEmitters.cpp"
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/@react-native-community/datetimepicker/android/build/generated/source/codegen/jni/react/renderer/components/RNDateTimePickerCGen/Props.cpp"
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/@react-native-community/datetimepicker/android/build/generated/source/codegen/jni/react/renderer/components/RNDateTimePickerCGen/ShadowNodes.cpp"
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/@react-native-community/datetimepicker/android/build/generated/source/codegen/jni/react/renderer/components/RNDateTimePickerCGen/States.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/CMakeFiles/cmake.verify_globs")
+endif()
+
+# CODEGEN_ORIGINAL_SRCS at C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-reanimated/Common/NativeView/CMakeLists.txt:7 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-reanimated/Common/NativeView/../../android/build/generated/source/codegen/jni/*.cpp")
+set(OLD_GLOB
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-reanimated/Common/NativeView/../../android/build/generated/source/codegen/jni/rnreanimated-generated.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/CMakeFiles/cmake.verify_globs")
+endif()
+
+# CODEGEN_ORIGINAL_SRCS at C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-reanimated/Common/NativeView/CMakeLists.txt:7 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-reanimated/Common/NativeView/../../android/build/generated/source/codegen/jni/react/renderer/components/rnreanimated/*.cpp")
+set(OLD_GLOB
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-reanimated/Common/NativeView/../../android/build/generated/source/codegen/jni/react/renderer/components/rnreanimated/ComponentDescriptors.cpp"
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-reanimated/Common/NativeView/../../android/build/generated/source/codegen/jni/react/renderer/components/rnreanimated/EventEmitters.cpp"
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-reanimated/Common/NativeView/../../android/build/generated/source/codegen/jni/react/renderer/components/rnreanimated/Props.cpp"
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-reanimated/Common/NativeView/../../android/build/generated/source/codegen/jni/react/renderer/components/rnreanimated/ShadowNodes.cpp"
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-reanimated/Common/NativeView/../../android/build/generated/source/codegen/jni/react/renderer/components/rnreanimated/States.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/CMakeFiles/cmake.verify_globs")
+endif()
+
+# CODEGEN_OVERWRITTEN_SRCS at C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-reanimated/Common/NativeView/CMakeLists.txt:15 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-reanimated/Common/NativeView/./*.cpp")
+set(OLD_GLOB
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/CMakeFiles/cmake.verify_globs")
+endif()
+
+# CODEGEN_OVERWRITTEN_SRCS at C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-reanimated/Common/NativeView/CMakeLists.txt:15 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-reanimated/Common/NativeView/./react/renderer/components/rnreanimated/*.cpp")
+set(OLD_GLOB
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-reanimated/Common/NativeView/./react/renderer/components/rnreanimated/REASharedTransitionBoundaryShadowNode.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/CMakeFiles/cmake.verify_globs")
+endif()
+
 # LIB_CUSTOM_SRCS at C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-safe-area-context/android/src/main/jni/CMakeLists.txt:12 (file)
 file(GLOB NEW_GLOB LIST_DIRECTORIES true "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-safe-area-context/android/src/main/jni/*.cpp")
 set(OLD_GLOB
@@ -123,11 +214,60 @@ if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   file(TOUCH_NOCREATE "C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/CMakeFiles/cmake.verify_globs")
 endif()
 
+# react_codegen_SRCS at C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-worklets/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-worklets/android/build/generated/source/codegen/jni/*.cpp")
+set(OLD_GLOB
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-worklets/android/build/generated/source/codegen/jni/rnworklets-generated.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/CMakeFiles/cmake.verify_globs")
+endif()
+
+# react_codegen_SRCS at C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-worklets/android/build/generated/source/codegen/jni/CMakeLists.txt:9 (file)
+file(GLOB NEW_GLOB LIST_DIRECTORIES true "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-worklets/android/build/generated/source/codegen/jni/react/renderer/components/rnworklets/*.cpp")
+set(OLD_GLOB
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-worklets/android/build/generated/source/codegen/jni/react/renderer/components/rnworklets/ComponentDescriptors.cpp"
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-worklets/android/build/generated/source/codegen/jni/react/renderer/components/rnworklets/EventEmitters.cpp"
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-worklets/android/build/generated/source/codegen/jni/react/renderer/components/rnworklets/Props.cpp"
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-worklets/android/build/generated/source/codegen/jni/react/renderer/components/rnworklets/ShadowNodes.cpp"
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-worklets/android/build/generated/source/codegen/jni/react/renderer/components/rnworklets/States.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/CMakeFiles/cmake.verify_globs")
+endif()
+
 # override_cpp_SRC at C:/learning/React/code/RN_Cli_Demo/node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake:50 (file)
 # input_SRC at C:/learning/React/code/RN_Cli_Demo/node_modules/react-native/ReactAndroid/cmake-utils/ReactNative-application.cmake:55 (file)
 file(GLOB NEW_GLOB LIST_DIRECTORIES true "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/*.cpp")
 set(OLD_GLOB
   "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native/ReactAndroid/cmake-utils/default-app-setup/OnLoad.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/CMakeFiles/cmake.verify_globs")
+endif()
+
+# rn_gesture_handler_SRCS at C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-gesture-handler/android/CMakeLists.txt:7 (file)
+file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-gesture-handler/android/../shared/shadowNodes/*.cpp")
+set(OLD_GLOB
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-gesture-handler/android/../shared/shadowNodes/react/renderer/components/rngesturehandler_codegen/RNGestureHandlerDetectorShadowNode.cpp"
+  )
+if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
+  message("-- GLOB mismatch!")
+  file(TOUCH_NOCREATE "C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/CMakeFiles/cmake.verify_globs")
+endif()
+
+# rn_gesture_handler_codegen_SRCS at C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-gesture-handler/android/CMakeLists.txt:8 (file)
+file(GLOB_RECURSE NEW_GLOB LIST_DIRECTORIES false "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-gesture-handler/android/./build/generated/source/codegen/jni/*.cpp")
+set(OLD_GLOB
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-gesture-handler/android/./build/generated/source/codegen/jni/react/renderer/components/rngesturehandler_codegen/ComponentDescriptors.cpp"
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-gesture-handler/android/./build/generated/source/codegen/jni/react/renderer/components/rngesturehandler_codegen/EventEmitters.cpp"
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-gesture-handler/android/./build/generated/source/codegen/jni/react/renderer/components/rngesturehandler_codegen/Props.cpp"
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-gesture-handler/android/./build/generated/source/codegen/jni/react/renderer/components/rngesturehandler_codegen/ShadowNodes.cpp"
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-gesture-handler/android/./build/generated/source/codegen/jni/react/renderer/components/rngesturehandler_codegen/States.cpp"
+  "C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-gesture-handler/android/./build/generated/source/codegen/jni/rngesturehandler_codegen-generated.cpp"
   )
 if(NOT "${NEW_GLOB}" STREQUAL "${OLD_GLOB}")
   message("-- GLOB mismatch!")

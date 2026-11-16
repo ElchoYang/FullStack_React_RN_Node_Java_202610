@@ -251,6 +251,15 @@ CMAKE_TOOLCHAIN_FILE:UNINITIALIZED=C:\Users\033431672\AppData\Local\Android\Sdk\
 // Studio IDE projects all commands are done without /nologo.
 CMAKE_VERBOSE_MAKEFILE:BOOL=FALSE
 
+//Value Computed by CMake
+GestureHandlerCodegen_BINARY_DIR:STATIC=C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/rngesturehandler_codegen_autolinked_build
+
+//Value Computed by CMake
+GestureHandlerCodegen_IS_TOP_LEVEL:STATIC=OFF
+
+//Value Computed by CMake
+GestureHandlerCodegen_SOURCE_DIR:STATIC=C:/learning/React/code/RN_Cli_Demo/node_modules/react-native-gesture-handler/android
+
 //No help, variable specified on the command line.
 PROJECT_BUILD_DIR:UNINITIALIZED=C:\learning\React\code\RN_Cli_Demo\android\app\build
 
@@ -374,7 +383,7 @@ CMAKE_MODULE_LINKER_FLAGS_RELWITHDEBINFO-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_NM
 CMAKE_NM-ADVANCED:INTERNAL=1
 //number of local generators
-CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=3
+CMAKE_NUMBER_OF_MAKEFILES:INTERNAL=8
 //ADVANCED property for variable: CMAKE_OBJCOPY
 CMAKE_OBJCOPY-ADVANCED:INTERNAL=1
 //ADVANCED property for variable: CMAKE_OBJDUMP

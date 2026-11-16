@@ -44,8 +44,13 @@ endif()
 
 if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   # Include the install script for each subdirectory.
+  include("C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/AsyncStorageSpec_autolinked_build/cmake_install.cmake")
+  include("C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/RNDateTimePickerCGen_autolinked_build/cmake_install.cmake")
+  include("C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/rngesturehandler_codegen_autolinked_build/cmake_install.cmake")
+  include("C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/rnreanimated_autolinked_build/cmake_install.cmake")
   include("C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/safeareacontext_autolinked_build/cmake_install.cmake")
   include("C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/rnscreens_autolinked_build/cmake_install.cmake")
+  include("C:/learning/React/code/RN_Cli_Demo/android/app/.cxx/Debug/61z5j321/x86_64/rnworklets_autolinked_build/cmake_install.cmake")
 
 endif()
 
